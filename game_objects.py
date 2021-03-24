@@ -3,7 +3,7 @@ import pyglet.sprite as sprite
 import numpy as np
 
 import resources as res
-from GameMetric import *
+from game_metric import *
 
 __author__ = 'Dmitry'
 

@@ -2,8 +2,8 @@ import numpy as np
 import pyglet
 from pyglet.window import key
 
-import GameObjects
-from GameMetric import *
+import game_objects
+from game_metric import *
 
 __author__ = 'Dmitry'
 
@@ -49,7 +49,7 @@ box_targets = []
 
 current_cell = 0, 0
 
-player = GameObjects.Player(None, current_cell)
+player = game_objects.Player(None, current_cell)
 # player.image.anchor_x = 0
 # player.image.anchor_y = 0
 
@@ -60,14 +60,14 @@ for row in range(len(arr)):
         current_cell = row, column
         cur_cell_val = arr[current_cell]
         if cur_cell_val >= 10:
-            box_targets.append(GameObjects.BoxTarget(layer2, current_cell))  # кидаем во второй слой
+            box_targets.append(game_objects.BoxTarget(layer2, current_cell))  # кидаем во второй слой
             cur_cell_val -= 10
         if cur_cell_val == 2:
-            trees.append(GameObjects.Tree(batch, current_cell))
+            trees.append(game_objects.Tree(batch, current_cell))
         if cur_cell_val == 3:
-            bricks.append(GameObjects.Brick(batch, current_cell))
+            bricks.append(game_objects.Brick(batch, current_cell))
         if cur_cell_val == 4:
-            boxes.append(GameObjects.Box(batch, current_cell))
+            boxes.append(game_objects.Box(batch, current_cell))
         elif arr[current_cell] == 1:
             # player = GameObjects.Player(row, column, None)
             player.move(current_cell)  # работает только потому, что изначально у игрока позиция 0,0

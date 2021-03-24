@@ -5,7 +5,7 @@ import pyglet
 from pyglet import clock
 from pyglet.window import mouse
 
-import GameObjects
+import game_objects
 
 __author__ = 'Dmitry'
 
@@ -36,7 +36,7 @@ def save_level(filename, game_object):
     cfgfile.close()
 
 
-def load_level(levelnumber, game_objects):
+def load_level(levelnumber, g_o):
     opencfg = configparser.ConfigParser()
     opencfg.read("levels/" + levelnumber + ".ini")
 
@@ -44,13 +44,13 @@ def load_level(levelnumber, game_objects):
     # (в данном случае в список позиций - туплу, в которой тупла)
     trees_list = ast.literal_eval(opencfg.get("GameObjects", 'trees'))
     # заполняем массив деревьев с помощью генераторного выражения
-    game_objects.trees = [GameObjects.Tree(batch, current_cell) for current_cell in trees_list]
+    g_o.trees = [game_objects.Tree(batch, current_cell) for current_cell in trees_list]
 
-    game_objects.bricks = [GameObjects.Brick(batch, current_cell) for current_cell in
+    g_o.bricks = [game_objects.Brick(batch, current_cell) for current_cell in
                            ast.literal_eval(opencfg.get("GameObjects", 'bricks'))]
-    game_objects.boxes = [GameObjects.Box(batch, current_cell) for current_cell in
+    g_o.boxes = [game_objects.Box(batch, current_cell) for current_cell in
                           ast.literal_eval(opencfg.get("GameObjects", 'boxes'))]
-    game_objects.box_targets = [GameObjects.BoxTarget(batch, current_cell) for current_cell in
+    g_o.box_targets = [game_objects.BoxTarget(batch, current_cell) for current_cell in
                                 ast.literal_eval(opencfg.get("GameObjects", 'box_targets'))]
 
     return game_objects
