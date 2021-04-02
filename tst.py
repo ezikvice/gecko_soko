@@ -2,22 +2,20 @@ import ast
 import configparser
 
 import pyglet
+import pyglet.sprite as sprite
 from pyglet import clock
 from pyglet.window import mouse
 
 import game_objects
+import resources as res
 
 __author__ = 'Dmitry'
 
 pyglet.resource.path = ["res"]
 pyglet.resource.reindex()
 
-# tree = pyglet.sprite.Sprite(res.player, 600, 40)
-# tree.image = res.tree
-# tree.image.anchor_x = tree.width // 2
-# tree.image.anchor_y = tree.height // 2
-
 batch = pyglet.graphics.Batch()
+editor_batch = pyglet.graphics.Batch()
 
 
 def save_level(filename, game_object):
@@ -53,23 +51,35 @@ def load_level(levelnumber, g_o):
     g_o.box_targets = [game_objects.BoxTarget(batch, current_cell) for current_cell in
                                 ast.literal_eval(opencfg.get("GameObjects", 'box_targets'))]
 
+    player_coords = ast.literal_eval(opencfg.get("GameObjects", 'player'))
+    g_o.player = player_coords
+
     return game_objects
 
 
-class GameObject:
+class ObjectsRepository:
     trees = []
     bricks = []
     boxes = []
     box_targets = []
-    player = (2, 2)
+    player = (0, 0)
 
 
-ob = GameObject()
+ob = ObjectsRepository()
 
 load_level("1", ob)
 save_level("levels/test.ini", ob)
 
-window = pyglet.window.Window(width=640, height=640, caption="Gecko Soko")
+
+tree = sprite.Sprite(res.pinetree, 630, 500, batch=editor_batch)
+
+
+window = pyglet.window.Window(width=800, height=640, caption="Gecko Soko")
+image = res.target
+cursor = pyglet.window.ImageMouseCursor(image, 16, 8)
+window.set_mouse_cursor(cursor)
+
+
 
 label = pyglet.text.Label('',
                           font_name='Times New Roman',
@@ -89,8 +99,8 @@ clock.schedule(update)
 @window.event
 def on_draw():
     window.clear()
-    # tree.draw()
     batch.draw()
+    editor_batch.draw()
     label.draw()
 
 

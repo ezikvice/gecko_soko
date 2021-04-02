@@ -1,6 +1,11 @@
+import ast
+import configparser
+
 import numpy as np
 
 __author__ = 'Dmitry'
+
+import game_objects
 
 
 class Game:
@@ -41,3 +46,43 @@ class Game:
         for obj in objects:
             if obj.row == r and obj.column == c:
                 return obj
+
+
+def save_level(filename, game_object):
+    # lets create that config file for next time...
+    cfgfile = open(filename, 'w')
+
+    cfg = configparser.ConfigParser()
+    # add the settings to the structure of the file, and lets write it out...
+    cfg.add_section('GameObjects')
+    cfg.set('GameObjects', 'trees', ', '.join(str(x.get_position()) for x in game_object.trees))
+    cfg.set('GameObjects', 'bricks', ', '.join(str(x.get_position()) for x in game_object.bricks))
+    cfg.set('GameObjects', 'boxes', ', '.join(str(x.get_position()) for x in game_object.boxes))
+    cfg.set('GameObjects', 'box_targets', ', '.join(str(x.get_position()) for x in game_object.box_targets))
+    cfg.set('GameObjects', 'player', str(game_object.player))
+    cfg.write(cfgfile)
+    cfgfile.close()
+
+
+def load_level(levelnumber, g_o, batch):
+    opencfg = configparser.ConfigParser()
+    opencfg.read("levels/" + levelnumber + ".ini")
+
+    # ast.literal_eval приводит строку к простым типам питона
+    # (в данном случае в список позиций - туплу, в которой тупла)
+    trees_list = ast.literal_eval(opencfg.get("GameObjects", 'trees'))
+    # заполняем массив деревьев с помощью генераторного выражения
+    g_o.trees = [game_objects.Tree(batch, current_cell) for current_cell in trees_list]
+
+    g_o.bricks = [game_objects.Brick(batch, current_cell) for current_cell in
+                           ast.literal_eval(opencfg.get("GameObjects", 'bricks'))]
+    g_o.boxes = [game_objects.Box(batch, current_cell) for current_cell in
+                          ast.literal_eval(opencfg.get("GameObjects", 'boxes'))]
+    g_o.box_targets = [game_objects.BoxTarget(batch, current_cell) for current_cell in
+                                ast.literal_eval(opencfg.get("GameObjects", 'box_targets'))]
+
+    player_coords = ast.literal_eval(opencfg.get("GameObjects", 'player'))
+    g_o.player = player_coords
+
+    return game_objects
+

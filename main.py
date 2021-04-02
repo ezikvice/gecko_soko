@@ -50,10 +50,7 @@ box_targets = []
 current_cell = 0, 0
 
 player = game_objects.Player(None, current_cell)
-# player.image.anchor_x = 0
-# player.image.anchor_y = 0
 
-arrsize = arr.size
 
 for row in range(len(arr)):
     for column in range(len(arr[row])):
