@@ -2,6 +2,7 @@ import numpy as np
 import pyglet
 from pyglet.window import key
 
+import gamefield
 import game_objects
 from game_metric import *
 
@@ -50,6 +51,7 @@ box_targets = []
 current_cell = 0, 0
 
 player = game_objects.Player(None, current_cell)
+gamefield = gamefield.Game()
 
 
 for row in range(len(arr)):
@@ -175,13 +177,13 @@ def on_text_motion(motion):
 @window.event
 def on_key_press(symbol, modifiers):
     if symbol == key.M:
-        player.music.pause()
+        gamefield.music.pause()
     if symbol == key.P:
-        player.music.play()
+        gamefield.music.play()
     if symbol == key.PAGEUP:
-        player.music.volume += 0.05
+        gamefield.music.volume += 0.05
     if symbol == key.PAGEDOWN:
-        player.music.volume -= 0.05
+        gamefield.music.volume -= 0.05
 
 
 @window.event

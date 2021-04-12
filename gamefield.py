@@ -1,11 +1,13 @@
+__author__ = 'Dmitry'
+
 import ast
 import configparser
 
 import numpy as np
-
-__author__ = 'Dmitry'
+import pyglet.media as media
 
 import game_objects
+import resources as res
 
 
 class Game:
@@ -19,6 +21,15 @@ class Game:
     bricks = []
     boxes = []
     box_targets = []
+
+    music = media.Player()
+
+    def __init__(self):
+        source = res.backmusic
+        self.music.volume = 0.3
+        self.music.queue(source)
+        self.music.loop = True
+        self.music.play()
 
     def can_move(self, obj, direction):
         # проверяем не кирпич ли это
@@ -48,18 +59,18 @@ class Game:
                 return obj
 
 
-def save_level(filename, game_object):
+def save_level(filename, game_objects):
     # lets create that config file for next time...
     cfgfile = open(filename, 'w')
 
     cfg = configparser.ConfigParser()
     # add the settings to the structure of the file, and lets write it out...
     cfg.add_section('GameObjects')
-    cfg.set('GameObjects', 'trees', ', '.join(str(x.get_position()) for x in game_object.trees))
-    cfg.set('GameObjects', 'bricks', ', '.join(str(x.get_position()) for x in game_object.bricks))
-    cfg.set('GameObjects', 'boxes', ', '.join(str(x.get_position()) for x in game_object.boxes))
-    cfg.set('GameObjects', 'box_targets', ', '.join(str(x.get_position()) for x in game_object.box_targets))
-    cfg.set('GameObjects', 'player', str(game_object.player))
+    cfg.set('GameObjects', 'trees', ', '.join(str(x.get_position()) for x in game_objects.trees))
+    cfg.set('GameObjects', 'bricks', ', '.join(str(x.get_position()) for x in game_objects.bricks))
+    cfg.set('GameObjects', 'boxes', ', '.join(str(x.get_position()) for x in game_objects.boxes))
+    cfg.set('GameObjects', 'box_targets', ', '.join(str(x.get_position()) for x in game_objects.box_targets))
+    cfg.set('GameObjects', 'player', str(game_objects.player))
     cfg.write(cfgfile)
     cfgfile.close()
 
@@ -75,14 +86,13 @@ def load_level(levelnumber, g_o, batch):
     g_o.trees = [game_objects.Tree(batch, current_cell) for current_cell in trees_list]
 
     g_o.bricks = [game_objects.Brick(batch, current_cell) for current_cell in
-                           ast.literal_eval(opencfg.get("GameObjects", 'bricks'))]
+                  ast.literal_eval(opencfg.get("GameObjects", 'bricks'))]
     g_o.boxes = [game_objects.Box(batch, current_cell) for current_cell in
-                          ast.literal_eval(opencfg.get("GameObjects", 'boxes'))]
+                 ast.literal_eval(opencfg.get("GameObjects", 'boxes'))]
     g_o.box_targets = [game_objects.BoxTarget(batch, current_cell) for current_cell in
-                                ast.literal_eval(opencfg.get("GameObjects", 'box_targets'))]
+                       ast.literal_eval(opencfg.get("GameObjects", 'box_targets'))]
 
     player_coords = ast.literal_eval(opencfg.get("GameObjects", 'player'))
     g_o.player = player_coords
 
     return game_objects
-

@@ -1,6 +1,5 @@
-import pyglet.media as media
-import pyglet.sprite as sprite
 import numpy as np
+import pyglet.sprite as sprite
 
 import resources as res
 from game_metric import *
@@ -35,15 +34,8 @@ class GameObject(sprite.Sprite):
 
 class Player(GameObject):
     def __init__(self, batch, arr):
-        super(Player, self).__init__(res.player, 1, batch, arr)
+        super(Player, self).__init__(res.player, obj_id=1, batch=batch, arr=arr)
 
-        source = res.backmusic
-        self.music.volume = 0.3
-        self.music.queue(source)
-        self.music.loop = True
-        self.music.play()
-
-    music = media.Player()
     views = {'up': res.player, 'down': res.player_down, 'left': res.player_left, 'right': res.player_right}
 
     # TODO: научиться правильно поворачивать игрока (может, загружать в один большой спрайт и оттуда тягать по фреймам)
