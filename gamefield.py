@@ -10,7 +10,7 @@ import game_objects
 import resources as res
 
 
-class Game:
+class GameField:
     CELL_SIZE = 64
     ROWS_NUM = 9
     COLUMNS_NUM = 9
@@ -92,7 +92,8 @@ def load_level(levelnumber, g_o, batch):
     g_o.box_targets = [game_objects.BoxTarget(batch, current_cell) for current_cell in
                        ast.literal_eval(opencfg.get("GameObjects", 'box_targets'))]
 
-    player_coords = ast.literal_eval(opencfg.get("GameObjects", 'player'))
-    g_o.player = player_coords
+    g_o.player = ast.literal_eval(opencfg.get("GameObjects", 'player'))
+    # player_coords = ast.literal_eval(opencfg.get("GameObjects", 'player'))
+    # g_o.player = player_coords
 
     return game_objects

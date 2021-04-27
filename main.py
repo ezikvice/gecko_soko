@@ -51,7 +51,7 @@ box_targets = []
 current_cell = 0, 0
 
 player = game_objects.Player(None, current_cell)
-gamefield = gamefield.Game()
+gamefield = gamefield.GameField()
 
 
 for row in range(len(arr)):
