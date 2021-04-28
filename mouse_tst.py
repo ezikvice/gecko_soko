@@ -29,7 +29,7 @@ figures.append(box_target)
 window = pyglet.window.Window(width=800, height=640, caption="Mouse test")
 
 image = res.target
-cursor = pyglet.window.ImageMouseCursor(image, 16, 8)
+# cursor = pyglet.window.ImageMouseCursor(image, 16, 8)
 # window.set_mouse_cursor(cursor)
 window.set_mouse_visible()
 
@@ -42,7 +42,7 @@ def change_cursor(sprt):
     # TODO: делать (или передавать копию картинки, а не менять исходный объект)
     img = sprt
     img.opacity = 128
-    current_cursor = pyglet.window.ImageMouseCursor(img.image, 0, 0)
+    current_cursor = pyglet.window.ImageMouseCursor(img.image, img.width/2, img.height/2)
     window.set_mouse_cursor(current_cursor)
 
 
@@ -74,6 +74,7 @@ def on_mouse_press(x, y, button, modifiers):
         check_figure_under_mouse(x, y, figures)
     elif button == mouse.RIGHT:
         label.text = 'right: {0}:{1}'.format(x, y)
+        window.set_mouse_cursor(window.CURSOR_DEFAULT)
 
 
 pyglet.app.run()
