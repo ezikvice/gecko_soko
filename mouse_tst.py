@@ -1,4 +1,7 @@
+import copy
+
 import pyglet
+import pyglet.sprite as sprite
 from pyglet import clock
 from pyglet.window import mouse
 
@@ -14,10 +17,14 @@ editor_batch = pyglet.graphics.Batch()
 
 figures = []
 
-tree = game_objects.Tree(editor_batch, [1, 1])
-brick = game_objects.Brick(editor_batch, [1, 2])
+tree = game_objects.Tree(editor_batch, [1, 10])
 figures.append(tree)
+brick = game_objects.Brick(editor_batch, [1, 11])
 figures.append(brick)
+box = game_objects.Box(editor_batch, [2, 10])
+figures.append(box)
+box_target = game_objects.BoxTarget(editor_batch, [2, 11])
+figures.append(box_target)
 
 window = pyglet.window.Window(width=800, height=640, caption="Mouse test")
 
