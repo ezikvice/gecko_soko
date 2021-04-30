@@ -59,7 +59,7 @@ class GameField:
                 return obj
 
 
-def save_level(filename, game_objects):
+def save_level(filename, game_objects, level):
     # lets create that config file for next time...
     cfgfile = open(filename, 'w')
 
@@ -71,13 +71,14 @@ def save_level(filename, game_objects):
     cfg.set('GameObjects', 'boxes', ', '.join(str(x.get_position()) for x in game_objects.boxes))
     cfg.set('GameObjects', 'box_targets', ', '.join(str(x.get_position()) for x in game_objects.box_targets))
     cfg.set('GameObjects', 'player', str(game_objects.player))
+    cfg.set('GameObjects', 'level', level)
     cfg.write(cfgfile)
     cfgfile.close()
 
 
-def load_level(levelnumber, g_o, batch):
+def load_level(level_number, g_o, batch):
     opencfg = configparser.ConfigParser()
-    opencfg.read("levels/" + levelnumber + ".ini")
+    opencfg.read("levels/" + level_number + ".ini")
 
     # ast.literal_eval приводит строку к простым типам питона
     # (в данном случае в список позиций - туплу, в которой тупла)

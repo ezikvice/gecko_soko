@@ -8,68 +8,36 @@ from game_metric import *
 
 __author__ = 'Dmitry'
 
-
 # TODO: сделать нормальный расчет координат. сейчас неправильно считаются
-
-
-# TODO: загружать поле из файла
-# TODO: для загрузки каждого класса свою функцию, например load_boxes(boxes_array)
-# или наоборот одну load_objects(boxes_array, boxes_class)
-# def load_level(filename):
-#     opencfg = configparser.ConfigParser()
-#     opencfg.read("levels/" + filename + ".ini")
-#     print(opencfg.get("GameObjects", 'trees'))
-#     print(opencfg.get("GameObjects", 'bricks'))
-def load_trees(config, trees):
-    trees_list = config.get("GameObjects", 'trees')
-
-
-# TODO: сделать загрузку из нескольких массивов на каждый объект свой массив
-arr = np.array([[3, 3, 3, 3, 3, 3, 3, 3, 2],
-                [3, 0, 0, 0, 0, 0, 0, 3, 2],
-                [3, 0, 1, 0, 0, 0, 0, 3, 2],
-                [3, 0, 4, 0, 0, 10, 0, 3, 2],
-                [3, 0, 0, 0, 0, 0, 0, 3, 2],
-                [3, 0, 0, 14, 0, 0, 0, 3, 2],
-                [3, 0, 0, 0, 0, 0, 0, 3, 2],
-                [2, 3, 3, 3, 3, 3, 3, 2, 2],
-                [0, 2, 2, 2, 2, 2, 2, 2, 0]])
 
 pyglet.resource.path = ["res"]
 pyglet.resource.reindex()
 
-# player = pyglet.sprite.Sprite(res.player, x=50, y=50)
 
 batch = pyglet.graphics.Batch()
 layer2 = pyglet.graphics.Batch()
 
-trees = []
-bricks = []
-boxes = []
-box_targets = []
-
 current_cell = 0, 0
-
-player = game_objects.Player(None, current_cell)
-gamefield = gamefield.GameField()
+game_field = gamefield.GameField()
 
 
-for row in range(len(arr)):
-    for column in range(len(arr[row])):
-        current_cell = row, column
-        cur_cell_val = arr[current_cell]
-        if cur_cell_val >= 10:
-            box_targets.append(game_objects.BoxTarget(layer2, current_cell))  # кидаем во второй слой
-            cur_cell_val -= 10
-        if cur_cell_val == 2:
-            trees.append(game_objects.Tree(batch, current_cell))
-        if cur_cell_val == 3:
-            bricks.append(game_objects.Brick(batch, current_cell))
-        if cur_cell_val == 4:
-            boxes.append(game_objects.Box(batch, current_cell))
-        elif arr[current_cell] == 1:
-            # player = GameObjects.Player(row, column, None)
-            player.move(current_cell)  # работает только потому, что изначально у игрока позиция 0,0
+class ObjectsRepository:
+    trees = []
+    bricks = []
+    boxes = []
+    box_targets = []
+    player = (0, 0)
+    level = 0
+
+
+ob = ObjectsRepository()
+gamefield.load_level("1", ob, batch)
+player = game_objects.Player(None, ob.player)
+# TODO: избавиться от лишних объектов
+trees = ob.trees
+bricks = ob.bricks
+boxes = ob.boxes
+box_targets = ob.box_targets
 
 window = pyglet.window.Window(width=(CELL_SIZE * 10), height=(CELL_SIZE * 10), caption="Gecko Soko")
 window.set_mouse_visible(True)
@@ -177,20 +145,19 @@ def on_text_motion(motion):
 @window.event
 def on_key_press(symbol, modifiers):
     if symbol == key.M:
-        gamefield.music.pause()
+        game_field.music.pause()
     if symbol == key.P:
-        gamefield.music.play()
+        game_field.music.play()
     if symbol == key.PAGEUP:
-        gamefield.music.volume += 0.05
+        game_field.music.volume += 0.05
     if symbol == key.PAGEDOWN:
-        gamefield.music.volume -= 0.05
+        game_field.music.volume -= 0.05
 
 
 @window.event
 def on_draw():
     window.clear()
     batch.draw()
-    layer2.draw()
     player.draw()
     label.draw()
     label2.draw()
