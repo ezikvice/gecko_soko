@@ -102,6 +102,14 @@ def load_level(level_number, g_o, batch):
 
 
 def get_cell_by_coords(x, y):
-    row = GameField.COLUMNS_NUM - y // GameField.CELL_SIZE
+    row = GameField.ROWS_NUM - y // GameField.CELL_SIZE
     column = x // GameField.CELL_SIZE
     return row, column
+
+
+# TODO: можно через get_cell_by_coords
+def is_mouse_on_gamefield(x, y):
+    if (x // GameField.CELL_SIZE <= GameField.COLUMNS_NUM) & (
+            (GameField.COLUMNS_NUM - y // GameField.CELL_SIZE) <= GameField.ROWS_NUM):
+        return True
+    return False

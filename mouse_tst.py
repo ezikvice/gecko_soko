@@ -7,6 +7,7 @@ from pyglet.window import mouse
 
 import game_objects
 import gamefield
+from gamefield import GameField
 
 import resources as res
 
@@ -36,7 +37,7 @@ image = res.target
 window.set_mouse_visible()
 
 label = pyglet.text.Label('', font_name='Times New Roman',
-                          font_size=36, x=410, y=10,
+                          font_size=16, x=410, y=10,
                           anchor_x='right', anchor_y='baseline')
 
 
@@ -44,7 +45,7 @@ def change_cursor(sprt):
     # TODO: делать (или передавать копию картинки, а не менять исходный объект)
     img = sprt
     img.opacity = 128
-    current_cursor = pyglet.window.ImageMouseCursor(img.image, img.width/2, img.height/2)
+    current_cursor = pyglet.window.ImageMouseCursor(img.image, img.width / 2, img.height / 2)
     window.set_mouse_cursor(current_cursor)
 
 
@@ -75,7 +76,8 @@ def on_mouse_press(x, y, button, modifiers):
         label.text = 'left: {0}:{1}'.format(x, y)
         check_figure_under_mouse(x, y, figures)
     elif button == mouse.RIGHT:
-        label.text = 'right: {0}'.format(gamefield.get_cell_by_coords(x,y))
+        label.text = 'right: {0}, is mouse on gamefield: {1}'\
+            .format(gamefield.get_cell_by_coords(x, y), gamefield.is_mouse_on_gamefield(x, y))
         window.set_mouse_cursor(window.CURSOR_DEFAULT)
 
 
