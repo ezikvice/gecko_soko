@@ -5,6 +5,7 @@ import configparser
 
 import numpy as np
 import pyglet.media as media
+import pyglet.shapes as shapes
 
 import game_objects
 import resources as res
@@ -113,3 +114,21 @@ def is_mouse_on_gamefield(x, y):
             (GameField.COLUMNS_NUM - y // GameField.CELL_SIZE) <= GameField.ROWS_NUM):
         return True
     return False
+
+
+def draw_grid(batch, lines_arr):
+    # grid_color = (250, 225, 30) # желтый
+    # grid_color = (255, 0, 144) # магента
+    # grid_color = (0, 200, 255) # голубой
+    grid_color = (0, 255, 255) # циан
+    for i in range(GameField.ROWS_NUM + 1):
+        lines_arr.append(shapes.Line(GameField.CELL_SIZE * i + 1, 640 - 1,
+                                     GameField.CELL_SIZE * i + 1,
+                                     640 - GameField.COLUMNS_NUM * GameField.CELL_SIZE - 1,
+                                     width=1, color=grid_color, batch=batch))
+    for i in range(GameField.COLUMNS_NUM + 1):
+        lines_arr.append(shapes.Line(1, 640 - GameField.CELL_SIZE * i - 1,
+                                     GameField.COLUMNS_NUM * GameField.CELL_SIZE + 1,
+                                     640 - GameField.CELL_SIZE * i - 1,
+                                     width=1, color=grid_color, batch=batch))
+    # batch.draw()

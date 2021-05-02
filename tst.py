@@ -1,9 +1,11 @@
 import pyglet
 import pyglet.sprite as sprite
+
 from pyglet import clock
 from pyglet.window import mouse
 
 import gamefield
+
 import resources as res
 
 __author__ = 'Dmitry'
@@ -11,8 +13,9 @@ __author__ = 'Dmitry'
 pyglet.resource.path = ["res"]
 pyglet.resource.reindex()
 
-batch = pyglet.graphics.Batch()
+objects_batch = pyglet.graphics.Batch()
 editor_batch = pyglet.graphics.Batch()
+grid_batch = pyglet.graphics.Batch()
 
 
 class ObjectsRepository:
@@ -25,7 +28,7 @@ class ObjectsRepository:
 
 
 ob = ObjectsRepository()
-gamefield.load_level("test", ob, batch)
+gamefield.load_level("test", ob, objects_batch)
 
 tree = sprite.Sprite(res.pinetree, 630, 500, batch=editor_batch)
 
@@ -41,6 +44,7 @@ label = pyglet.text.Label('',
                           anchor_x='right', anchor_y='baseline')
 
 
+
 def update(dt):
     # tree.rotation += 100*dt
     pass
@@ -48,13 +52,16 @@ def update(dt):
 
 clock.schedule(update)
 
+lines_array = []
+gamefield.draw_grid(grid_batch, lines_array)
 
 @window.event
 def on_draw():
     window.clear()
-    batch.draw()
+    objects_batch.draw()
     editor_batch.draw()
     label.draw()
+    grid_batch.draw()
 
 
 @window.event
@@ -69,4 +76,3 @@ gamefield.save_level("levels/test.ini", ob, "test")
 # window.push_handlers(event_logger)
 
 pyglet.app.run()
-
