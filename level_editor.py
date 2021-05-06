@@ -1,0 +1,83 @@
+import pyglet
+from pyglet import clock
+from pyglet.window import mouse
+
+import game_objects
+import gamefield
+import resources as res
+
+__author__ = 'Dmitry'
+
+pyglet.resource.path = ["res"]
+pyglet.resource.reindex()
+
+editor_batch = pyglet.graphics.Batch()
+grid_batch = pyglet.graphics.Batch()
+
+figures = []
+
+tree = game_objects.Tree(editor_batch, [1, 10])
+figures.append(tree)
+brick = game_objects.Brick(editor_batch, [1, 11])
+figures.append(brick)
+box = game_objects.Box(editor_batch, [2, 10])
+figures.append(box)
+box_target = game_objects.BoxTarget(editor_batch, [2, 11])
+figures.append(box_target)
+
+window = pyglet.window.Window(width=800, height=640, caption="Mouse test")
+
+image = res.target
+# cursor = pyglet.window.ImageMouseCursor(image, 16, 8)
+# window.set_mouse_cursor(cursor)
+window.set_mouse_visible()
+
+label = pyglet.text.Label('', font_name='Times New Roman',
+                          font_size=16, x=410, y=10,
+                          anchor_x='right', anchor_y='baseline')
+
+
+def change_cursor(sprt):
+    # TODO: делать (или передавать копию картинки, а не менять исходный объект)
+    img = sprt
+    img.opacity = 128
+    current_cursor = pyglet.window.ImageMouseCursor(img.image, img.width / 2, img.height / 2)
+    window.set_mouse_cursor(current_cursor)
+
+
+def check_figure_under_mouse(x, y, figures_array):
+    for figure in figures_array:
+        if figure.x <= x <= figure.x + figure.width and figure.y <= y <= figure.y + figure.height:
+            label.text = "figure #" + str(figure.obj_id)
+            change_cursor(figure)
+
+
+def update(dt):
+    pass
+
+
+clock.schedule(update)
+grid_array = []
+gamefield.draw_grid(grid_batch, grid_array)
+
+
+@window.event
+def on_draw():
+    window.clear()
+    editor_batch.draw()
+    grid_batch.draw()
+    label.draw()
+
+
+@window.event
+def on_mouse_press(x, y, button, modifiers):
+    if button == mouse.LEFT:
+        label.text = 'left: {0}:{1}'.format(x, y)
+        check_figure_under_mouse(x, y, figures)
+    elif button == mouse.RIGHT:
+        label.text = 'right: {0}, is mouse on gamefield: {1}' \
+            .format(gamefield.get_cell_by_coords(x, y), gamefield.is_mouse_on_gamefield(x, y))
+        window.set_mouse_cursor(window.CURSOR_DEFAULT)
+
+
+pyglet.app.run()

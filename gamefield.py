@@ -110,8 +110,8 @@ def get_cell_by_coords(x, y):
 
 # TODO: можно через get_cell_by_coords
 def is_mouse_on_gamefield(x, y):
-    if (x // GameField.CELL_SIZE <= GameField.COLUMNS_NUM) & (
-            (GameField.COLUMNS_NUM - y // GameField.CELL_SIZE) <= GameField.ROWS_NUM):
+    if (x // GameField.CELL_SIZE < GameField.COLUMNS_NUM) & (
+            (GameField.COLUMNS_NUM - y // GameField.CELL_SIZE) < GameField.ROWS_NUM):
         return True
     return False
 
