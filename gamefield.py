@@ -38,13 +38,13 @@ class GameField:
         next_cell = np.add([obj.row, obj.column], direction)
         next_cell.tolist()
         r, c = next_cell
-        if self.get_obj_by_cell(self.bricks, r, c):
+        if get_obj_by_cell(self.bricks, r, c):
             return False
         else:
             # проверяем, если это ящик, то что за ним
             old_r = r
             old_c = c
-            if self.get_obj_by_cell(self.boxes, r, c):
+            if get_obj_by_cell(self.boxes, r, c):
                 next_cell = np.add(next_cell, direction)
                 next_cell.tolist()
                 r, c = next_cell

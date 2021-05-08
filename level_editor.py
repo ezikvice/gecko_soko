@@ -49,7 +49,9 @@ def check_figure_under_mouse(x, y, figures_array):
 def set_selected_figure_on_gamefield(figure, row, column):
     if figure.obj_id == 2:
         current_cell = row, column
+
         gamefield.GameField.trees.append(game_objects.Tree(gamefield_batch, current_cell))
+        print(gamefield.GameField.trees)
     label.text = "figure #" + str(figure)
     print("figure #" + str(figure))
 
@@ -98,7 +100,6 @@ def on_mouse_press(x, y, button, modifiers):
         else:
             check_figure_under_mouse(x, y, level_editor.editor_figures)
             print(level_editor.selected_figure)
-        label.text = 'left: {0}:{1}'.format(x, y)
     elif button == mouse.RIGHT:
         label.text = 'right: {0}, is mouse on gamefield: {1}' \
             .format(gamefield.get_cell_by_coords(x, y), gamefield.is_mouse_on_gamefield(x, y))
