@@ -19,6 +19,7 @@ layer2 = pyglet.graphics.Batch()
 
 current_cell = 0, 0
 game_field = gamefield.GameField()
+game_field.music.play()
 
 
 class ObjectsRepository:
