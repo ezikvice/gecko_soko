@@ -1,3 +1,4 @@
+import copy
 import pyglet
 from pyglet import clock
 from pyglet.window import mouse
@@ -30,8 +31,8 @@ class LevelEditor:
 
 def change_cursor(sprt):
     # TODO: делать (или передавать копию картинки, а не менять исходный объект)
-    img = sprt
-    img.scale = 1.1
+    img = copy.copy(sprt)
+    # img.scale = 1.1
     # img.opacity = 128
     current_cursor = pyglet.window.ImageMouseCursor(img.image, img.width / 2, img.height / 2)
     window.set_mouse_cursor(current_cursor)
@@ -96,7 +97,10 @@ def on_mouse_press(x, y, button, modifiers):
         if gamefield.is_mouse_on_gamefield(x, y):
             # ставим выделенную фигуру
             row, column = gamefield.get_cell_by_coords(x, y)
-            set_selected_figure_on_gamefield(level_editor.selected_figure, row, column)
+            try:
+                set_selected_figure_on_gamefield(level_editor.selected_figure, row, column)
+            except AttributeError:
+                print("Объект не выделен")
         else:
             check_figure_under_mouse(x, y, level_editor.editor_figures)
             print(level_editor.selected_figure)

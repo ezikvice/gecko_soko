@@ -1,14 +1,9 @@
-import copy
-
 import pyglet
-import pyglet.sprite as sprite
 from pyglet import clock
 from pyglet.window import mouse
 
 import game_objects
 import gamefield
-from gamefield import GameField
-
 import resources as res
 
 __author__ = 'Dmitry'
@@ -76,7 +71,7 @@ def on_mouse_press(x, y, button, modifiers):
         label.text = 'left: {0}:{1}'.format(x, y)
         check_figure_under_mouse(x, y, figures)
     elif button == mouse.RIGHT:
-        label.text = 'right: {0}, is mouse on gamefield: {1}'\
+        label.text = 'right: {0}, is mouse on gamefield: {1}' \
             .format(gamefield.get_cell_by_coords(x, y), gamefield.is_mouse_on_gamefield(x, y))
         window.set_mouse_cursor(window.CURSOR_DEFAULT)
 
