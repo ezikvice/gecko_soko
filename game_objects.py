@@ -29,7 +29,7 @@ class GameObject(sprite.Sprite):
 
     def get_position(self):
         # для удобства сначала строка, потом колонка
-        return self.row, self.column
+        return str(self.row), str(self.column)
 
 
 class Player(GameObject):
@@ -50,12 +50,18 @@ class Tree(GameObject):
     def __init__(self, batch, arr):
         super(Tree, self).__init__(res.pinetree, 2, batch, arr)
 
+    def __str__(self):
+        return "tree: r=" + str(self.row) + ", c=" + str(self.column)
+
 
 class Brick(GameObject):
     """кирпичная стена"""
 
     def __init__(self, batch, arr):
         super(Brick, self).__init__(res.brick, 3, batch, arr)
+
+    def __str__(self):
+        return "brick: r=" + str(self.row) + ", c=" + str(self.column)
 
 
 class Box(GameObject):
@@ -64,9 +70,28 @@ class Box(GameObject):
     def __init__(self, batch, arr):
         super(Box, self).__init__(res.box, 4, batch, arr)
 
+    def __str__(self):
+        return "box: r=" + str(self.row) + ", c=" + str(self.column)
+
 
 class BoxTarget(GameObject):
     """место, куда надо поставить ящик"""
 
     def __init__(self, batch, arr):
         super(BoxTarget, self).__init__(res.target, 10, batch, arr)
+
+    def __str__(self):
+        return "box target: r=" + str(self.row) + ", c=" + str(self.column)
+
+
+def build_game_object(o_id, cell_coords):
+    if o_id == 1:
+        return Player(None, cell_coords)
+    elif o_id == 2:
+        return Tree(None, cell_coords)
+    elif o_id == 3:
+        return Brick(None, cell_coords)
+    elif o_id == 4:
+        return Box(None, cell_coords)
+    elif o_id == 10:
+        return BoxTarget(None, cell_coords)

@@ -44,15 +44,28 @@ def check_figure_under_mouse(x, y, figures_array):
             label.text = "figure #" + str(figure.obj_id)
             change_cursor(figure)
             level_editor.set_selected(figure)
-            print("selected: " + repr(level_editor.selected_figure))
+            print("selected: " + str(level_editor.selected_figure))
 
 
 def set_selected_figure_on_gamefield(figure, row, column):
+    figure.row = row
+    figure.column = column
+    current_cell = row, column
+
     if figure.obj_id == 2:
-        current_cell = row, column
 
         gamefield.GameField.trees.append(game_objects.Tree(gamefield_batch, current_cell))
-        print(gamefield.GameField.trees)
+        print(*gamefield.GameField.trees, sep='; ')
+    elif figure.obj_id == 3:
+        gamefield.GameField.bricks.append(game_objects.Brick(gamefield_batch, current_cell))
+        print(*gamefield.GameField.bricks, sep='; ')
+    elif figure.obj_id == 4:
+        gamefield.GameField.boxes.append(game_objects.Box(gamefield_batch, current_cell))
+        print(*gamefield.GameField.boxes, sep='; ')
+    elif figure.obj_id == 10:
+        gamefield.GameField.box_targets.append(game_objects.BoxTarget(gamefield_batch, current_cell))
+        print(*gamefield.GameField.box_targets, sep='; ')
+
     label.text = "figure #" + str(figure)
     print("figure #" + str(figure))
 
@@ -61,14 +74,11 @@ def update(dt):
     pass
 
 
-pyglet.resource.path = ["res"]
-pyglet.resource.reindex()
-
 grid_batch = pyglet.graphics.Batch()
 editor_batch = pyglet.graphics.Batch()
 
 level_objects = []
-game_field = gamefield.GameField()
+gamefield.GameField()
 level_editor = LevelEditor(editor_batch)
 
 window = pyglet.window.Window(width=800, height=640, caption="Level Editor")

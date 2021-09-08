@@ -11,6 +11,12 @@ import game_objects
 import resources as res
 
 
+# TODO: все-таки, где располагаются объекты, должно храниться не в объектах а в игровом поле
+
+# TODO: игровое поле представляет собой двумерный массив ячеек, а ячейка содержит в себе список игровых объектов
+# {{row, column}:[game_objects]}
+
+
 class GameField:
     CELL_SIZE = 64
     ROWS_NUM = 9
@@ -22,6 +28,9 @@ class GameField:
     bricks = []
     boxes = []
     box_targets = []
+
+    cells = {}
+
 
     music = media.Player()
 
