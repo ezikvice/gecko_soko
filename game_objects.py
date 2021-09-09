@@ -18,6 +18,14 @@ class GameObject(sprite.Sprite):
         self.row = row
         self.obj_id = obj_id
 
+    def __eq__(self, other):
+        if not isinstance(other, GameObject):
+            return NotImplemented
+        return self.obj_id == other.obj_id
+
+    def __hash__(self):
+        return hash(self.obj_id)
+
     def move(self, direction):
         next_cell = np.add([self.row, self.column], direction)
         next_cell.tolist()

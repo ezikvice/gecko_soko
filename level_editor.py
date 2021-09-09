@@ -15,6 +15,7 @@ class LevelEditor:
     selected_figure = None
     editor_figures = []
 
+
     def __init__(self, batch):
         tree = game_objects.Tree(batch, [1, 10])
         self.editor_figures.append(tree)
@@ -31,7 +32,7 @@ class LevelEditor:
 
 def change_cursor(sprt):
     # TODO: делать (или передавать копию картинки, а не менять исходный объект)
-    img = copy.copy(sprt)
+    img = sprt
     # img.scale = 1.1
     # img.opacity = 128
     current_cursor = pyglet.window.ImageMouseCursor(img.image, img.width / 2, img.height / 2)

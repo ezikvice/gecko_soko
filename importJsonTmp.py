@@ -26,10 +26,10 @@ with open('levels/1.json') as f:
     r = cell["r"]
     c = cell["c"]
     num_arr = cell["objects"]
-    obj_arr = []
+    obj_set = set()
     for obj_id in num_arr:
-        obj_arr.append(build_game_object(obj_id, [r, c]))
-    cells[(r, c)] = obj_arr
+        obj_set.add(build_game_object(obj_id, [r, c]))
+    cells[(r, c)] = obj_set
     print(cells.values())
 
 
