@@ -20,17 +20,20 @@ def build_game_object(o_id, cell_coords):
 
 with open('levels/1.json') as f:
     d = json.load(f)
-    cell = d["cell"]
+    cells_dict = d["cells"]
     # print(cell)
 
-    r = cell["r"]
-    c = cell["c"]
-    num_arr = cell["objects"]
-    obj_set = set()
-    for obj_id in num_arr:
-        obj_set.add(build_game_object(obj_id, [r, c]))
-    cells[(r, c)] = obj_set
-    print(cells.values())
+    for cell in cells_dict:
+        r = cell["r"]
+        c = cell["c"]
+        num_arr = cell["objects"]
+        obj_set = set()
+        for obj_id in num_arr:
+            obj_set.add(build_game_object(obj_id, [r, c]))
+            # cell[(r, c)] = obj_set
+            cells.setdefault((r, c), obj_set)
+
+    print(cells)
 
 
 

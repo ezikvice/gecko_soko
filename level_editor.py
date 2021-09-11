@@ -1,6 +1,8 @@
-import copy
+import json
+
 import pyglet
 from pyglet import clock
+from pyglet.window import key
 from pyglet.window import mouse
 
 import game_objects
@@ -14,7 +16,6 @@ gamefield_batch = pyglet.graphics.Batch()
 class LevelEditor:
     selected_figure = None
     editor_figures = []
-
 
     def __init__(self, batch):
         tree = game_objects.Tree(batch, [1, 10])
@@ -52,23 +53,35 @@ def set_selected_figure_on_gamefield(figure, row, column):
     figure.row = row
     figure.column = column
     current_cell = row, column
+    obj_set = set()
+    if gamefield.GameField.cells.get((row, column)) is not None:
+        obj_set = gamefield.GameField.cells[(row, column)]
 
     if figure.obj_id == 2:
-
         gamefield.GameField.trees.append(game_objects.Tree(gamefield_batch, current_cell))
-        print(*gamefield.GameField.trees, sep='; ')
+        # print(*gamefield.GameField.trees, sep='; ')
     elif figure.obj_id == 3:
         gamefield.GameField.bricks.append(game_objects.Brick(gamefield_batch, current_cell))
-        print(*gamefield.GameField.bricks, sep='; ')
+        # print(*gamefield.GameField.bricks, sep='; ')
     elif figure.obj_id == 4:
         gamefield.GameField.boxes.append(game_objects.Box(gamefield_batch, current_cell))
-        print(*gamefield.GameField.boxes, sep='; ')
+        # print(*gamefield.GameField.boxes, sep='; ')
     elif figure.obj_id == 10:
         gamefield.GameField.box_targets.append(game_objects.BoxTarget(gamefield_batch, current_cell))
-        print(*gamefield.GameField.box_targets, sep='; ')
+        # print(*gamefield.GameField.box_targets, sep='; ')
+
+    obj_set.add(game_objects.build_game_object(figure.obj_id, current_cell))
+    gamefield.GameField.cells.setdefault((row, column), obj_set)
+
+    print(gamefield.GameField.cells.get((row, column)))
 
     label.text = "figure #" + str(figure)
     print("figure #" + str(figure))
+
+
+def save_level():
+    with open('levels/data.json', 'w', encoding='utf-8') as f:
+        json.dump(gamefield.GameField.cells, f, ensure_ascii=False, indent=4)
 
 
 def update(dt):
@@ -119,6 +132,16 @@ def on_mouse_press(x, y, button, modifiers):
         label.text = 'right: {0}, is mouse on gamefield: {1}' \
             .format(gamefield.get_cell_by_coords(x, y), gamefield.is_mouse_on_gamefield(x, y))
         window.set_mouse_cursor(window.CURSOR_DEFAULT)
+
+
+@window.event
+def on_key_press(symbol, modifiers):
+    if symbol == key.S:
+        save_level()
+        print("symbol:" + symbol)
+        print("modifiers", modifiers)
+
+
 
 
 pyglet.app.run()
