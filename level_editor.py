@@ -84,13 +84,10 @@ def save_level():
     with open('levels/data.json', 'w', encoding='utf-8') as f:
         json_cells = []
         for cell in gamefield.GameField.cells:
-            # cell_string = "\"r\": " + cell
-            print("cells: {0}, {1}".format(cell[0], cell[1]))
             json_cell = JsonCell.JsonCell(cell[0], cell[1])
             json_cell.objects = gamefield.GameField.cells[(json_cell.r, json_cell.c)]
             json_cells.append(json_cell)
 
-        print("json_cells: {}" , json_cells)
         json.dump(json_cells, f, cls=JsonCell.JsonCellEncoder, ensure_ascii=False, indent=4)
 
 
