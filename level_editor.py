@@ -139,6 +139,7 @@ def on_mouse_press(x, y, button, modifiers):
             check_figure_under_mouse(x, y, level_editor.editor_figures)
             print(level_editor.selected_figure)
     elif button == mouse.RIGHT:
+        level_editor.selected_figure = None
         label.text = 'right: {0}, is mouse on gamefield: {1}' \
             .format(gamefield.get_cell_by_coords(x, y), gamefield.is_mouse_on_gamefield(x, y))
         window.set_mouse_cursor(window.CURSOR_DEFAULT)
