@@ -14,9 +14,9 @@ class JsonCell:
 class JsonCellEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, JsonCell):
-           return {
-               'r': obj.r,
-               'c': obj.c,
-               'objects': list(map(lambda x: x.obj_id, obj.objects))
-           }
+            return {
+                'r': obj.r,
+                'c': obj.c,
+                'objects': [ob.obj_id for ob in obj.objects]
+            }
         return json.JSONEncoder.default(self, obj)
