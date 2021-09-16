@@ -1,7 +1,10 @@
+import json
+
 import pyglet
 from pyglet import clock
 from pyglet.window import key
 from pyglet.window import mouse
+import JsonCell
 
 import game_objects
 import gamefield
@@ -79,11 +82,16 @@ def set_selected_figure_on_gamefield(figure, row, column):
 
 def save_level():
     with open('levels/data.json', 'w', encoding='utf-8') as f:
+        json_cells = []
         for cell in gamefield.GameField.cells:
             # cell_string = "\"r\": " + cell
-            print(str(cell[0]) + ", " + str(cell[1]))
-        # json_str = json.dumps(gamefield.GameField.cells, ensure_ascii=False, indent=4)
-        # print(json_str)
+            print("cells: {0}, {1}".format(cell[0], cell[1]))
+            json_cell = JsonCell.JsonCell(cell[0], cell[1])
+            json_cell.objects = gamefield.GameField.cells[(json_cell.r, json_cell.c)]
+            json_cells.append(json_cell)
+
+        print("json_cells: {}" , json_cells)
+        json.dump(json_cells, f, cls=JsonCell.JsonCellEncoder, ensure_ascii=False, indent=4)
 
 
 def update(dt):
