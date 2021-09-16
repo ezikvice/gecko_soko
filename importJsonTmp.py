@@ -34,6 +34,4 @@ with open('levels/1.json') as f:
             cells.setdefault((r, c), obj_set)
 
     print(cells)
-
-
-
+    print(cells[(3, 3)])

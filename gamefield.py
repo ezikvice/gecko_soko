@@ -29,6 +29,7 @@ class GameField:
     boxes = []
     box_targets = []
 
+    # игровое поле хранится в формате {(row, column1): [set, of, game_objects]}
     cells = {}
 
 
