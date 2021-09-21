@@ -32,8 +32,10 @@ class ObjectsRepository:
 
 
 ob = ObjectsRepository()
-gamefield.load_level("1", ob, batch)
-player = game_objects.Player(None, ob.player)
+# gamefield.load_level("1", ob, batch)
+gamefield.load_level2("2", game_field.cells, batch)
+# player = game_objects.Player(None, ob.player)
+player = gamefield.find_player(game_field.cells)
 # TODO: избавиться от лишних объектов
 trees = ob.trees
 bricks = ob.bricks
@@ -105,6 +107,10 @@ def get_obj_by_coords(objects, r, c):
     for obj in objects:
         if obj.row == r and obj.column == c:
             return obj
+
+
+def is_figure_in_cell(cell):
+    return
 
 
 @window.event

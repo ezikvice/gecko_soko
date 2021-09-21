@@ -27,6 +27,8 @@ class LevelEditor:
         self.editor_figures.append(box)
         box_target = game_objects.BoxTarget(batch, [2, 11])
         self.editor_figures.append(box_target)
+        player = game_objects.Player(batch, [3, 10])
+        self.editor_figures.append(player)
 
     def set_selected(self, figure):
         self.selected_figure = figure
@@ -58,20 +60,7 @@ def set_selected_figure_on_gamefield(figure, row, column):
     if gamefield.GameField.cells.get((row, column)) is not None:
         obj_set = gamefield.GameField.cells[(row, column)]
 
-    if figure.obj_id == 2:
-        gamefield.GameField.trees.append(game_objects.Tree(gamefield_batch, current_cell))
-        # print(*gamefield.GameField.trees, sep='; ')
-    elif figure.obj_id == 3:
-        gamefield.GameField.bricks.append(game_objects.Brick(gamefield_batch, current_cell))
-        # print(*gamefield.GameField.bricks, sep='; ')
-    elif figure.obj_id == 4:
-        gamefield.GameField.boxes.append(game_objects.Box(gamefield_batch, current_cell))
-        # print(*gamefield.GameField.boxes, sep='; ')
-    elif figure.obj_id == 10:
-        gamefield.GameField.box_targets.append(game_objects.BoxTarget(gamefield_batch, current_cell))
-        # print(*gamefield.GameField.box_targets, sep='; ')
-
-    obj_set.add(game_objects.build_game_object(figure.obj_id, current_cell))
+    obj_set.add(game_objects.build_game_object(gamefield_batch, figure.obj_id, current_cell))
     gamefield.GameField.cells.setdefault((row, column), obj_set)
 
     print(gamefield.GameField.cells.get((row, column)))

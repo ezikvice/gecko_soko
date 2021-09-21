@@ -92,14 +92,14 @@ class BoxTarget(GameObject):
         return "box target: r=" + str(self.row) + ", c=" + str(self.column)
 
 
-def build_game_object(o_id, cell_coords):
+def build_game_object(batch, o_id, cell_coords):
     if o_id == 1:
-        return Player(None, cell_coords)
+        return Player(batch, cell_coords)
     elif o_id == 2:
-        return Tree(None, cell_coords)
+        return Tree(batch, cell_coords)
     elif o_id == 3:
-        return Brick(None, cell_coords)
+        return Brick(batch, cell_coords)
     elif o_id == 4:
-        return Box(None, cell_coords)
+        return Box(batch, cell_coords)
     elif o_id == 10:
-        return BoxTarget(None, cell_coords)
+        return BoxTarget(batch, cell_coords)
