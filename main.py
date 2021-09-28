@@ -67,26 +67,38 @@ def show_coords():
     label2.text = ''
 
 
+def is_figure_in_cell(figure, cell):
+    cell_set = game_field.cells.get((cell[0], cell[1]))
+    if cell_set is not None and figure in cell_set:
+        return True
+    return False
+
+
 def can_move(obj, direction):
-    # проверяем не кирпич ли это
+    # проверяем не кирпич ли в нашем направлении
     next_cell = np.add([obj.row, obj.column], direction)
     next_cell.tolist()
     r, c = next_cell
-    if get_obj_by_coords(bricks, r, c):
+    if is_figure_in_cell(game_objects.Brick(None, next_cell), next_cell):
         return False
     else:
         # проверяем, если это ящик, то что за ним
         old_r = r
         old_c = c
-        if get_obj_by_coords(boxes, r, c):
+        if is_figure_in_cell(game_objects.Box(None, next_cell), next_cell):
             next_cell = np.add(next_cell, direction)
             next_cell.tolist()
-            r, c = next_cell
-            if get_obj_by_coords(boxes, r, c) or get_obj_by_coords(bricks, r, c):
+            if is_figure_in_cell(game_objects.Box(None, next_cell), next_cell) or is_figure_in_cell(game_objects.Brick(None, next_cell), next_cell):
                 return False
             else:
-                box = get_obj_by_coords(boxes, old_r, old_c)
+                box = get_object_by_coords(game_objects.Box, game_field.cells.get((old_r, old_c)))
                 box.move(direction)
+                obj_set = set(game_field.cells.get((old_r, old_c)))
+                obj_set.remove(box)
+                next_cell = np.add(next_cell, direction)
+                obj_set = set(game_field.cells.get((next_cell[0], next_cell[1])))
+                obj_set.add(box)
+                game_field.cells.setdefault((next_cell[0], next_cell[1]), obj_set)
     return True
 
 
@@ -103,14 +115,12 @@ def check_win():
     return False
 
 
-def get_obj_by_coords(objects, r, c):
-    for obj in objects:
-        if obj.row == r and obj.column == c:
-            return obj
-
-
-def is_figure_in_cell(cell):
-    return
+def get_object_by_coords(needed_object, cells):
+    for obj in cells:
+        if obj is not None:
+            if isinstance(obj, needed_object):
+                return obj
+    return None
 
 
 @window.event
