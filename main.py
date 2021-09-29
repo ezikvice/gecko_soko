@@ -48,6 +48,7 @@ label2 = pyglet.text.Label('',
 def show_coords():
     label.text = '[{0}, {1}]'.format(player.row, player.column)
     label2.text = ''
+    print(game_field.cells)
 
 
 def is_figure_in_cell(figure, cell):
@@ -75,18 +76,15 @@ def can_move(obj, direction):
                 return False
             else:
                 box = get_object_by_coords(game_objects.Box, game_field.cells.get((old_r, old_c)))
+                game_field.cells.get((old_r, old_c)).remove(box)
                 box.move(direction)
-                obj_set = set(game_field.cells.get((old_r, old_c)))
-                obj_set.remove(box)
-                next_cell = np.add(next_cell, direction)
-                next_cell.tolist()
                 next_cell_objects = game_field.cells.get((next_cell[0], next_cell[1]))
                 if next_cell_objects is None:
                     obj_set = set()
                 else:
                     obj_set = set(game_field.cells.get((next_cell[0], next_cell[1])))
                 obj_set.add(box)
-                game_field.cells.setdefault((next_cell[0], next_cell[1]), obj_set)
+                game_field.cells[(next_cell[0], next_cell[1])] = obj_set
     return True
 
 
