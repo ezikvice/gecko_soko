@@ -19,28 +19,11 @@ layer2 = pyglet.graphics.Batch()
 
 current_cell = 0, 0
 game_field = gamefield.GameField()
-game_field.music.play()
+# game_field.music.play()
 
-
-class ObjectsRepository:
-    trees = []
-    bricks = []
-    boxes = []
-    box_targets = []
-    player = (0, 0)
-    level = 0
-
-
-ob = ObjectsRepository()
-# gamefield.load_level("1", ob, batch)
 gamefield.load_level2("2", game_field.cells, batch)
 # player = game_objects.Player(None, ob.player)
 player = gamefield.find_player(game_field.cells)
-# TODO: избавиться от лишних объектов
-trees = ob.trees
-bricks = ob.bricks
-boxes = ob.boxes
-box_targets = ob.box_targets
 
 window = pyglet.window.Window(width=(CELL_SIZE * 10), height=(CELL_SIZE * 10), caption="Gecko Soko")
 window.set_mouse_visible(True)
@@ -96,7 +79,12 @@ def can_move(obj, direction):
                 obj_set = set(game_field.cells.get((old_r, old_c)))
                 obj_set.remove(box)
                 next_cell = np.add(next_cell, direction)
-                obj_set = set(game_field.cells.get((next_cell[0], next_cell[1])))
+                next_cell.tolist()
+                next_cell_objects = game_field.cells.get((next_cell[0], next_cell[1]))
+                if next_cell_objects is None:
+                    obj_set = set()
+                else:
+                    obj_set = set(game_field.cells.get((next_cell[0], next_cell[1])))
                 obj_set.add(box)
                 game_field.cells.setdefault((next_cell[0], next_cell[1]), obj_set)
     return True
@@ -104,15 +92,15 @@ def can_move(obj, direction):
 
 # если во всех мишенях коробки, то возвращаем True и показываем, что уровень пройден
 # TODO: переход на следующий уровень и если уровней больше не осталось, то победа!
-def check_win():
-    count = 0
-    for target in box_targets:
-        for box in boxes:
-            if box.get_position() == target.get_position():
-                count += 1
-    if count == len(box_targets):
-        return True
-    return False
+# def check_win():
+#     count = 0
+#     for target in box_targets:
+#         for box in boxes:
+#             if box.get_position() == target.get_position():
+#                 count += 1
+#     if count == len(box_targets):
+#         return True
+#     return False
 
 
 def get_object_by_coords(needed_object, cells):
@@ -131,32 +119,32 @@ def on_text_motion(motion):
             player.image = player.views['up']
             player.move(direction)
         show_coords()
-        if check_win():
-            label2.text = 'VICTORY!'
+        # if check_win():
+        #     label2.text = 'VICTORY!'
     if motion == key.MOTION_DOWN:  # координаты по y обращены для удобства
         direction = [1, 0]
         if can_move(player, direction):
             player.image = player.views['down']
             player.move(direction)
         show_coords()
-        if check_win():
-            label2.text = 'VICTORY!'
+        # if check_win():
+        #     label2.text = 'VICTORY!'
     if motion == key.MOTION_LEFT:
         direction = [0, -1]
         if can_move(player, direction):
             player.image = player.views['left']
             player.move(direction)
         show_coords()
-        if check_win():
-            label2.text = 'VICTORY!'
+        # if check_win():
+        #     label2.text = 'VICTORY!'
     if motion == key.MOTION_RIGHT:
         direction = [0, 1]
         if can_move(player, direction):
             player.image = player.views['right']
             player.move(direction)
         show_coords()
-        if check_win():
-            label2.text = 'VICTORY!'
+        # if check_win():
+        #     label2.text = 'VICTORY!'
 
 
 @window.event
