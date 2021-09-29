@@ -70,7 +70,7 @@ def set_selected_figure_on_gamefield(figure, row, column):
 
 
 def save_level():
-    with open('levels/data.json', 'w', encoding='utf-8') as f:
+    with open('levels/3.json', 'w', encoding='utf-8') as f:
         json_cells = []
         for cell in gamefield.GameField.cells:
             json_cell = JsonCell.JsonCell(cell[0], cell[1])

@@ -16,11 +16,10 @@ pyglet.resource.reindex()
 batch = pyglet.graphics.Batch()
 layer2 = pyglet.graphics.Batch()
 
-current_cell = 0, 0
 game_field = gamefield.GameField()
 # game_field.music.play()
 
-gamefield.load_level2("2", game_field.cells, batch)
+gamefield.load_level2("3", game_field.cells, batch)
 # player = game_objects.Player(None, ob.player)
 player = gamefield.find_player(game_field.cells)
 
@@ -93,15 +92,12 @@ def can_move(obj, direction):
 
 # если во всех мишенях коробки, то возвращаем True и показываем, что уровень пройден
 # TODO: переход на следующий уровень и если уровней больше не осталось, то победа!
-# def check_win():
-#     count = 0
-#     for target in box_targets:
-#         for box in boxes:
-#             if box.get_position() == target.get_position():
-#                 count += 1
-#     if count == len(box_targets):
-#         return True
-#     return False
+def check_win():
+    for cell in game_field.cells:
+        if game_objects.BoxTarget(None, (0, 0)) in game_field.cells[cell] \
+                and game_objects.Box(None, (0, 0)) not in game_field.cells[cell]:
+            return False
+    return True
 
 
 def get_object_in_set(needed_object, obj_set):
@@ -120,32 +116,32 @@ def on_text_motion(motion):
             player.image = player.views['up']
             player.move(direction)
         show_coords()
-        # if check_win():
-        #     label2.text = 'VICTORY!'
+        if check_win():
+            label2.text = 'VICTORY!'
     if motion == key.MOTION_DOWN:  # координаты по y обращены для удобства
         direction = [1, 0]
         if can_move(player, direction):
             player.image = player.views['down']
             player.move(direction)
         show_coords()
-        # if check_win():
-        #     label2.text = 'VICTORY!'
+        if check_win():
+            label2.text = 'VICTORY!'
     if motion == key.MOTION_LEFT:
         direction = [0, -1]
         if can_move(player, direction):
             player.image = player.views['left']
             player.move(direction)
         show_coords()
-        # if check_win():
-        #     label2.text = 'VICTORY!'
+        if check_win():
+            label2.text = 'VICTORY!'
     if motion == key.MOTION_RIGHT:
         direction = [0, 1]
         if can_move(player, direction):
             player.image = player.views['right']
             player.move(direction)
         show_coords()
-        # if check_win():
-        #     label2.text = 'VICTORY!'
+        if check_win():
+            label2.text = 'VICTORY!'
 
 
 @window.event
