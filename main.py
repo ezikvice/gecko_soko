@@ -13,7 +13,6 @@ __author__ = 'Dmitry'
 pyglet.resource.path = ["res"]
 pyglet.resource.reindex()
 
-
 batch = pyglet.graphics.Batch()
 layer2 = pyglet.graphics.Batch()
 
@@ -72,19 +71,23 @@ def can_move(obj, direction):
         if is_figure_in_cell(game_objects.Box(None, next_cell), next_cell):
             next_cell = np.add(next_cell, direction)
             next_cell.tolist()
-            if is_figure_in_cell(game_objects.Box(None, next_cell), next_cell) or is_figure_in_cell(game_objects.Brick(None, next_cell), next_cell):
+            if is_figure_in_cell(game_objects.Box(None, next_cell), next_cell) or is_figure_in_cell(
+                    game_objects.Brick(None, next_cell), next_cell):
                 return False
             else:
-                box = get_object_by_coords(game_objects.Box, game_field.cells.get((old_r, old_c)))
-                game_field.cells.get((old_r, old_c)).remove(box)
+                old_obj_set = game_field.cells.get((old_r, old_c))
+                box = get_object_in_set(game_objects.Box, old_obj_set)
+                old_obj_set.remove(box)
+                if len(old_obj_set) == 0:
+                    del game_field.cells[(old_r, old_c)]
                 box.move(direction)
                 next_cell_objects = game_field.cells.get((next_cell[0], next_cell[1]))
                 if next_cell_objects is None:
-                    obj_set = set()
+                    next_obj_set = set()
                 else:
-                    obj_set = set(game_field.cells.get((next_cell[0], next_cell[1])))
-                obj_set.add(box)
-                game_field.cells[(next_cell[0], next_cell[1])] = obj_set
+                    next_obj_set = set(game_field.cells.get((next_cell[0], next_cell[1])))
+                next_obj_set.add(box)
+                game_field.cells[(next_cell[0], next_cell[1])] = next_obj_set
     return True
 
 
@@ -101,8 +104,8 @@ def can_move(obj, direction):
 #     return False
 
 
-def get_object_by_coords(needed_object, cells):
-    for obj in cells:
+def get_object_in_set(needed_object, obj_set):
+    for obj in obj_set:
         if obj is not None:
             if isinstance(obj, needed_object):
                 return obj
