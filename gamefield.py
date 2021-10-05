@@ -32,7 +32,6 @@ class GameField:
     # игровое поле хранится в формате {(row, column1): [set, of, game_objects]}
     cells = {}
 
-
     music = media.Player()
 
     def __init__(self):
@@ -70,23 +69,6 @@ def get_obj_by_cell(self, objects, r, c):
     for obj in objects:
         if obj.row == r and obj.column == c:
             return obj
-
-
-def save_level(filename, level_objects, level):
-    # lets create that config file for next time...
-    cfgfile = open(filename, 'w')
-
-    cfg = configparser.ConfigParser()
-    # add the settings to the structure of the file, and lets write it out...
-    cfg.add_section('GameObjects')
-    cfg.set('GameObjects', 'trees', ', '.join(str(x.get_position()) for x in level_objects.trees))
-    cfg.set('GameObjects', 'bricks', ', '.join(str(x.get_position()) for x in level_objects.bricks))
-    cfg.set('GameObjects', 'boxes', ', '.join(str(x.get_position()) for x in level_objects.boxes))
-    cfg.set('GameObjects', 'box_targets', ', '.join(str(x.get_position()) for x in level_objects.box_targets))
-    cfg.set('GameObjects', 'player', str(level_objects.player))
-    cfg.set('GameObjects', 'level', level)
-    cfg.write(cfgfile)
-    cfgfile.close()
 
 
 def load_level(level_number, level_objects, batch):
@@ -131,7 +113,7 @@ def draw_grid(batch, lines_arr):
     # grid_color = (250, 225, 30) # желтый
     # grid_color = (255, 0, 144) # магента
     # grid_color = (0, 200, 255) # голубой
-    grid_color = (0, 255, 255) # циан
+    grid_color = (0, 255, 255)  # циан
     for i in range(GameField.ROWS_NUM + 1):
         lines_arr.append(shapes.Line(GameField.CELL_SIZE * i + 1, 640 - 1,
                                      GameField.CELL_SIZE * i + 1,

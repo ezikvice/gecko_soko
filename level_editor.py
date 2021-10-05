@@ -4,8 +4,8 @@ import pyglet
 from pyglet import clock
 from pyglet.window import key
 from pyglet.window import mouse
-import JsonCell
 
+import JsonCell
 import game_objects
 import gamefield
 
@@ -58,20 +58,7 @@ def set_selected_figure_on_gamefield(figure, row, column):
     if gamefield.GameField.cells.get((row, column)) is not None:
         obj_set = gamefield.GameField.cells[(row, column)]
 
-    if figure.obj_id == 2:
-        gamefield.GameField.trees.append(game_objects.Tree(gamefield_batch, current_cell))
-        # print(*gamefield.GameField.trees, sep='; ')
-    elif figure.obj_id == 3:
-        gamefield.GameField.bricks.append(game_objects.Brick(gamefield_batch, current_cell))
-        # print(*gamefield.GameField.bricks, sep='; ')
-    elif figure.obj_id == 4:
-        gamefield.GameField.boxes.append(game_objects.Box(gamefield_batch, current_cell))
-        # print(*gamefield.GameField.boxes, sep='; ')
-    elif figure.obj_id == 10:
-        gamefield.GameField.box_targets.append(game_objects.BoxTarget(gamefield_batch, current_cell))
-        # print(*gamefield.GameField.box_targets, sep='; ')
-
-    obj_set.add(game_objects.build_game_object(figure.obj_id, current_cell))
+    obj_set.add(game_objects.build_game_object(figure.obj_id, current_cell, gamefield_batch))
     gamefield.GameField.cells.setdefault((row, column), obj_set)
 
     print(gamefield.GameField.cells.get((row, column)))
@@ -144,10 +131,20 @@ def on_mouse_press(x, y, button, modifiers):
 
 @window.event
 def on_key_press(symbol, modifiers):
+    print("symbol:" + str(symbol))
+    print("modifiers", str(modifiers))
     if symbol == key.S:
-        print("symbol:" + str(symbol))
-        print("modifiers", str(modifiers))
-        save_level()
+        if modifiers & key.MOD_CTRL:
+            save_level()
+            label.text = 'level saved'
 
+@window.event
+def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
+    if buttons & mouse.LEFT:
+        row, column = gamefield.get_cell_by_coords(x, y)
+
+        # set_selected_figure_on_gamefield(level_editor.selected_figure, row, column)
+        label.text = 'x: {0}, y:{1}, dx:{2}, dy:{3}'.format(x, y, dx, dy)
+        # print('x: {0}, y:{1}, dx:{2}, dy:{dy}'.format(x, y, dx, dy))
 
 pyglet.app.run()

@@ -28,7 +28,7 @@ class ObjectsRepository:
 
 
 ob = ObjectsRepository()
-gamefield.load_level("test", ob, objects_batch)
+# gamefield.load_level("test", ob, objects_batch)
 
 tree = sprite.Sprite(res.pinetree, 630, 500, batch=editor_batch)
 
@@ -70,7 +70,7 @@ def on_mouse_press(x, y, button, modifiers):
         label.text = 'left: {0}:{1}'.format(x, y)
 
 
-gamefield.save_level("levels/test.ini", ob, "test")
+# gamefield.save_level("levels/test.ini", ob, "test")
 
 # event_logger = pyglet.window.event.WindowEventLogger()
 # window.push_handlers(event_logger)
