@@ -13,32 +13,15 @@ __author__ = 'Dmitry'
 pyglet.resource.path = ["res"]
 pyglet.resource.reindex()
 
-
 batch = pyglet.graphics.Batch()
 layer2 = pyglet.graphics.Batch()
 
-current_cell = 0, 0
 game_field = gamefield.GameField()
-game_field.music.play()
+# game_field.music.play()
 
-
-class ObjectsRepository:
-    trees = []
-    bricks = []
-    boxes = []
-    box_targets = []
-    player = (0, 0)
-    level = 0
-
-
-ob = ObjectsRepository()
-gamefield.load_level("1", ob, batch)
-player = game_objects.Player(None, ob.player)
-# TODO: избавиться от лишних объектов
-trees = ob.trees
-bricks = ob.bricks
-boxes = ob.boxes
-box_targets = ob.box_targets
+gamefield.load_level2("3", game_field.cells, batch)
+# player = game_objects.Player(None, ob.player)
+player = gamefield.find_player(game_field.cells)
 
 window = pyglet.window.Window(width=(CELL_SIZE * 10), height=(CELL_SIZE * 10), caption="Gecko Soko")
 window.set_mouse_visible(True)
@@ -63,48 +46,66 @@ label2 = pyglet.text.Label('',
 def show_coords():
     label.text = '[{0}, {1}]'.format(player.row, player.column)
     label2.text = ''
+    print(game_field.cells)
+
+
+def is_figure_in_cell(figure, cell):
+    cell_set = game_field.cells.get((cell[0], cell[1]))
+    if cell_set is not None and figure in cell_set:
+        return True
+    return False
 
 
 def can_move(obj, direction):
-    # проверяем не кирпич ли это
+    # проверяем не кирпич ли в нашем направлении
     next_cell = np.add([obj.row, obj.column], direction)
     next_cell.tolist()
     r, c = next_cell
-    if get_obj_by_coords(bricks, r, c):
+    if is_figure_in_cell(game_objects.Brick(None, next_cell), next_cell):
         return False
     else:
         # проверяем, если это ящик, то что за ним
         old_r = r
         old_c = c
-        if get_obj_by_coords(boxes, r, c):
+        if is_figure_in_cell(game_objects.Box(None, next_cell), next_cell):
             next_cell = np.add(next_cell, direction)
             next_cell.tolist()
-            r, c = next_cell
-            if get_obj_by_coords(boxes, r, c) or get_obj_by_coords(bricks, r, c):
+            if is_figure_in_cell(game_objects.Box(None, next_cell), next_cell) or is_figure_in_cell(
+                    game_objects.Brick(None, next_cell), next_cell):
                 return False
             else:
-                box = get_obj_by_coords(boxes, old_r, old_c)
+                old_obj_set = game_field.cells.get((old_r, old_c))
+                box = get_object_in_set(game_objects.Box, old_obj_set)
+                old_obj_set.remove(box)
+                if len(old_obj_set) == 0:
+                    del game_field.cells[(old_r, old_c)]
                 box.move(direction)
+                next_cell_objects = game_field.cells.get((next_cell[0], next_cell[1]))
+                if next_cell_objects is None:
+                    next_obj_set = set()
+                else:
+                    next_obj_set = set(game_field.cells.get((next_cell[0], next_cell[1])))
+                next_obj_set.add(box)
+                game_field.cells[(next_cell[0], next_cell[1])] = next_obj_set
     return True
 
 
 # если во всех мишенях коробки, то возвращаем True и показываем, что уровень пройден
 # TODO: переход на следующий уровень и если уровней больше не осталось, то победа!
 def check_win():
-    count = 0
-    for target in box_targets:
-        for box in boxes:
-            if box.get_position() == target.get_position():
-                count += 1
-    if count == len(box_targets):
-        return True
-    return False
+    for cell in game_field.cells:
+        if game_objects.BoxTarget(None, (0, 0)) in game_field.cells[cell] \
+                and game_objects.Box(None, (0, 0)) not in game_field.cells[cell]:
+            return False
+    return True
 
 
-def get_obj_by_coords(objects, r, c):
-    for obj in objects:
-        if obj.row == r and obj.column == c:
-            return obj
+def get_object_in_set(needed_object, obj_set):
+    for obj in obj_set:
+        if obj is not None:
+            if isinstance(obj, needed_object):
+                return obj
+    return None
 
 
 @window.event

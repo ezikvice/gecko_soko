@@ -27,6 +27,8 @@ class LevelEditor:
         self.editor_figures.append(box)
         box_target = game_objects.BoxTarget(batch, [2, 11])
         self.editor_figures.append(box_target)
+        player = game_objects.Player(batch, [3, 10])
+        self.editor_figures.append(player)
 
     def set_selected(self, figure):
         self.selected_figure = figure

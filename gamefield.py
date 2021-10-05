@@ -2,6 +2,7 @@ __author__ = 'Dmitry'
 
 import ast
 import configparser
+import json
 
 import numpy as np
 import pyglet.media as media
@@ -95,10 +96,49 @@ def load_level(level_number, level_objects, batch):
     return game_objects
 
 
+def build_game_object(o_id, cell_coords, batch):
+    if o_id == 1:
+        return game_objects.Player(batch, cell_coords)
+    elif o_id == 2:
+        return game_objects.Tree(batch, cell_coords)
+    elif o_id == 3:
+        return game_objects.Brick(batch, cell_coords)
+    elif o_id == 4:
+        return game_objects.Box(batch, cell_coords)
+    elif o_id == 10:
+        return game_objects.BoxTarget(batch, cell_coords)
+
+
+def load_level2(level_number, cells, batch):
+    with open('levels/' + level_number + '.json') as f:
+        d = json.load(f)
+        cells_dict = d["cells"]
+        # print(cell)
+
+        for cell in cells_dict:
+            r = cell["r"]
+            c = cell["c"]
+            num_arr = cell["objects"]
+            obj_set = set()
+            for obj_id in num_arr:
+                obj_set.add(build_game_object(obj_id, [r, c], batch))
+                cells.setdefault((r, c), obj_set)
+        print(cells)
+
+
 def get_cell_by_coords(x, y):
     row = GameField.ROWS_NUM - y // GameField.CELL_SIZE
     column = x // GameField.CELL_SIZE
     return row, column
+
+
+def find_player(cells):
+    for cell in cells:
+        if cells[cell] is not None:
+            for obj in cells[cell]:
+                if isinstance(obj, game_objects.Player):
+                    return obj
+    return None
 
 
 # TODO: можно через get_cell_by_coords
