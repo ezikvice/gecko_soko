@@ -1,10 +1,7 @@
 __author__ = 'Dmitry'
 
-import ast
-import configparser
 import json
 
-import numpy as np
 import pyglet.media as media
 import pyglet.shapes as shapes
 
@@ -25,11 +22,6 @@ class GameField:
     WIN_WIDTH = 640
     WIN_HEIGHT = 640 - CELL_SIZE
 
-    trees = []
-    bricks = []
-    boxes = []
-    box_targets = []
-
     # игровое поле хранится в формате {(row, column1): [set, of, game_objects]}
     cells = {}
 
@@ -41,29 +33,6 @@ class GameField:
         self.music.queue(source)
         self.music.loop = True
         # self.music.play()
-
-    # TODO: скорее всего можно улучшить
-    def can_move(self, obj, direction):
-        # проверяем не кирпич ли это
-        next_cell = np.add([obj.row, obj.column], direction)
-        next_cell.tolist()
-        r, c = next_cell
-        if get_obj_by_cell(self.bricks, r, c):
-            return False
-        else:
-            # проверяем, если это ящик, то что за ним
-            old_r = r
-            old_c = c
-            if get_obj_by_cell(self.boxes, r, c):
-                next_cell = np.add(next_cell, direction)
-                next_cell.tolist()
-                r, c = next_cell
-                if self.get_obj_by_cell(self.boxes, r, c) or self.get_obj_by_cell(self.bricks, r, c):
-                    return False
-                else:
-                    box = self.get_obj_by_cell(self.boxes, old_r, old_c)
-                    box.move(direction)
-        return True
 
 
 def get_obj_by_cell(self, objects, r, c):
