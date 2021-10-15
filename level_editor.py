@@ -19,6 +19,12 @@ class LevelEditor:
     editor_figures = []
 
     def __init__(self, batch):
+        self.set_editor_objects(batch)
+
+    def set_selected(self, figure):
+        self.selected_figure = figure
+
+    def set_editor_objects(self, batch):
         tree = game_objects.Tree(batch, [1, 10])
         self.editor_figures.append(tree)
         brick = game_objects.Brick(batch, [1, 11])
@@ -29,9 +35,6 @@ class LevelEditor:
         self.editor_figures.append(box_target)
         player = game_objects.Player(batch, [3, 10])
         self.editor_figures.append(player)
-
-    def set_selected(self, figure):
-        self.selected_figure = figure
 
 
 def change_cursor(sprt):
@@ -57,13 +60,13 @@ def set_selected_figure_on_gamefield(figure, row, column):
     figure.column = column
     current_cell = row, column
     obj_set = set()
-    if gamefield.GameField.cells.get((row, column)) is not None:
-        obj_set = gamefield.GameField.cells[(row, column)]
+    if game_field.cells.get((row, column)) is not None:
+        obj_set = game_field.cells[(row, column)]
 
     obj_set.add(game_objects.build_game_object(figure.obj_id, current_cell, gamefield_batch))
-    gamefield.GameField.cells.setdefault((row, column), obj_set)
+    game_field.cells.setdefault((row, column), obj_set)
 
-    print(gamefield.GameField.cells.get((row, column)))
+    print(game_field.cells.get((row, column)))
 
     label.text = "figure #" + str(figure)
     print("figure #" + str(figure))
@@ -72,9 +75,9 @@ def set_selected_figure_on_gamefield(figure, row, column):
 def save_level():
     with open('levels/data.json', 'w', encoding='utf-8') as f:
         json_cells = []
-        for cell in gamefield.GameField.cells:
+        for cell in game_field.cells:
             json_cell = JsonCell.JsonCell(cell[0], cell[1])
-            json_cell.objects = gamefield.GameField.cells[(json_cell.r, json_cell.c)]
+            json_cell.objects = game_field.cells[(json_cell.r, json_cell.c)]
             json_cells.append(json_cell)
 
         json.dump(json_cells, f, cls=JsonCell.JsonCellEncoder, ensure_ascii=False, indent=4)
@@ -88,7 +91,7 @@ grid_batch = pyglet.graphics.Batch()
 editor_batch = pyglet.graphics.Batch()
 
 level_objects = []
-gamefield.GameField()
+game_field = gamefield.GameField()
 level_editor = LevelEditor(editor_batch)
 
 window = pyglet.window.Window(width=800, height=640, caption="Level Editor")
