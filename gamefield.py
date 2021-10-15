@@ -35,12 +35,6 @@ class GameField:
         # self.music.play()
 
 
-def get_obj_by_cell(self, objects, r, c):
-    for obj in objects:
-        if obj.row == r and obj.column == c:
-            return obj
-
-
 def build_game_object(o_id, cell_coords, batch):
     if o_id == 1:
         return game_objects.Player(batch, cell_coords)
