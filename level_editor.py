@@ -145,6 +145,7 @@ def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
     if buttons & mouse.LEFT:
         row, column = gamefield.get_cell_by_coords(x, y)
 
+
         # set_selected_figure_on_gamefield(level_editor.selected_figure, row, column)
         label.text = 'x: {0}, y:{1}, dx:{2}, dy:{3}'.format(x, y, dx, dy)
         # print('x: {0}, y:{1}, dx:{2}, dy:{dy}'.format(x, y, dx, dy))

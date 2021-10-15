@@ -72,30 +72,6 @@ def get_obj_by_cell(self, objects, r, c):
             return obj
 
 
-def load_level(level_number, level_objects, batch):
-    opencfg = configparser.ConfigParser()
-    opencfg.read("levels/" + level_number + ".ini")
-
-    # ast.literal_eval приводит строку к простым типам питона
-    # (в данном случае в список позиций - туплу, в которой тупла)
-    trees_list = ast.literal_eval(opencfg.get("GameObjects", 'trees'))
-    # заполняем массив деревьев с помощью генераторного выражения
-    level_objects.trees = [game_objects.Tree(batch, current_cell) for current_cell in trees_list]
-
-    level_objects.bricks = [game_objects.Brick(batch, current_cell) for current_cell in
-                            ast.literal_eval(opencfg.get("GameObjects", 'bricks'))]
-    level_objects.boxes = [game_objects.Box(batch, current_cell) for current_cell in
-                           ast.literal_eval(opencfg.get("GameObjects", 'boxes'))]
-    level_objects.box_targets = [game_objects.BoxTarget(batch, current_cell) for current_cell in
-                                 ast.literal_eval(opencfg.get("GameObjects", 'box_targets'))]
-
-    level_objects.player = ast.literal_eval(opencfg.get("GameObjects", 'player'))
-    # player_coords = ast.literal_eval(opencfg.get("GameObjects", 'player'))
-    # g_o.player = player_coords
-
-    return game_objects
-
-
 def build_game_object(o_id, cell_coords, batch):
     if o_id == 1:
         return game_objects.Player(batch, cell_coords)
