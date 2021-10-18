@@ -6,6 +6,7 @@ import pyglet.media as media
 import pyglet.shapes as shapes
 
 import game_objects
+import game_metric
 import resources as res
 
 
@@ -16,14 +17,10 @@ import resources as res
 
 
 class GameField:
-    CELL_SIZE = 64
-    ROWS_NUM = 9
-    COLUMNS_NUM = 9
-    WIN_WIDTH = 640
-    WIN_HEIGHT = 640 - CELL_SIZE
-
     # игровое поле хранится в формате {(row, column1): [set, of, game_objects]}
     cells = {}
+    level = 1
+    player = game_objects.Player(None, [0, 0])
 
     music = media.Player()
 
@@ -48,8 +45,15 @@ def build_game_object(o_id, cell_coords, batch):
         return game_objects.BoxTarget(batch, cell_coords)
 
 
-def load_level2(level_number, cells, batch):
+def clear_level(game_level, batch):
+    game_level.cells.clear()
+    game_level.player.delete()
+
+
+def load_level(level_number, game_level, batch):
+    clear_level(game_level, batch)
     with open('levels/' + level_number + '.json') as f:
+        game_level.level = int(level_number)
         d = json.load(f)
         cells_dict = d["cells"]
         # print(cell)
@@ -61,13 +65,13 @@ def load_level2(level_number, cells, batch):
             obj_set = set()
             for obj_id in num_arr:
                 obj_set.add(build_game_object(obj_id, [r, c], batch))
-                cells.setdefault((r, c), obj_set)
-        print(cells)
+                game_level.cells.setdefault((r, c), obj_set)
+        # print(game_level.cells)
 
 
 def get_cell_by_coords(x, y):
-    row = GameField.ROWS_NUM - y // GameField.CELL_SIZE
-    column = x // GameField.CELL_SIZE
+    row = game_metric.ROWS_NUM - y // game_metric.CELL_SIZE
+    column = x // game_metric.CELL_SIZE
     return row, column
 
 
@@ -82,8 +86,8 @@ def find_player(cells):
 
 # TODO: можно через get_cell_by_coords
 def is_mouse_on_gamefield(x, y):
-    if (x // GameField.CELL_SIZE < GameField.COLUMNS_NUM) & (
-            (GameField.COLUMNS_NUM - y // GameField.CELL_SIZE) < GameField.ROWS_NUM):
+    if (x // game_metric.CELL_SIZE < game_metric.COLUMNS_NUM) & (
+            (game_metric.COLUMNS_NUM - y // game_metric.CELL_SIZE) < game_metric.ROWS_NUM):
         return True
     return False
 
@@ -93,14 +97,14 @@ def draw_grid(batch, lines_arr):
     # grid_color = (255, 0, 144) # магента
     # grid_color = (0, 200, 255) # голубой
     grid_color = (0, 255, 255)  # циан
-    for i in range(GameField.ROWS_NUM + 1):
-        lines_arr.append(shapes.Line(GameField.CELL_SIZE * i + 1, 640 - 1,
-                                     GameField.CELL_SIZE * i + 1,
-                                     640 - GameField.COLUMNS_NUM * GameField.CELL_SIZE - 1,
+    for i in range(game_metric.ROWS_NUM + 1):
+        lines_arr.append(shapes.Line(game_metric.CELL_SIZE * i + 1, 640 - 1,
+                                     game_metric.CELL_SIZE * i + 1,
+                                     640 - game_metric.COLUMNS_NUM * game_metric.CELL_SIZE - 1,
                                      width=1, color=grid_color, batch=batch))
-    for i in range(GameField.COLUMNS_NUM + 1):
-        lines_arr.append(shapes.Line(1, 640 - GameField.CELL_SIZE * i - 1,
-                                     GameField.COLUMNS_NUM * GameField.CELL_SIZE + 1,
-                                     640 - GameField.CELL_SIZE * i - 1,
+    for i in range(game_metric.COLUMNS_NUM + 1):
+        lines_arr.append(shapes.Line(1, 640 - game_metric.CELL_SIZE * i - 1,
+                                     game_metric.COLUMNS_NUM * game_metric.CELL_SIZE + 1,
+                                     640 - game_metric.CELL_SIZE * i - 1,
                                      width=1, color=grid_color, batch=batch))
     # batch.draw()
