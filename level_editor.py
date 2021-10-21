@@ -80,7 +80,11 @@ def save_level():
             json_cell.objects = game_field.cells[(json_cell.r, json_cell.c)]
             json_cells.append(json_cell)
 
-        json.dump(json_cells, f, cls=JsonCell.JsonCellEncoder, ensure_ascii=False, indent=4)
+        json_level = {}
+        json_level.setdefault("level", 4)
+        json_level.setdefault("cells", json_cells)
+
+        json.dump(json_level, f, cls=JsonCell.JsonCellEncoder, ensure_ascii=False, indent=4)
 
 
 def update(dt):
