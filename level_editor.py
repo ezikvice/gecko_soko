@@ -11,6 +11,8 @@ import gamefield
 
 __author__ = 'Dmitry'
 
+# import main
+
 gamefield_batch = pyglet.graphics.Batch()
 
 
@@ -20,6 +22,7 @@ class LevelEditor:
 
     def __init__(self, batch):
         self.set_editor_objects(batch)
+        load_level(4, game_field, gamefield_batch)
 
     def set_selected(self, figure):
         self.selected_figure = figure
@@ -72,8 +75,25 @@ def set_selected_figure_on_gamefield(figure, row, column):
     print("figure #" + str(figure))
 
 
-def save_level():
-    with open('levels/data.json', 'w', encoding='utf-8') as f:
+def load_level(level_number, editor, batch):
+    with open('levels/' + str(level_number) + '.json') as f:
+        editor.level = int(level_number)
+        d = json.load(f)
+        cells_dict = d["cells"]
+        # print(cell)
+
+        for cell in cells_dict:
+            r = cell["r"]
+            c = cell["c"]
+            obj_set = set()
+            for obj_id in cell["objects"]:
+                obj_set.add(gamefield.build_game_object(obj_id, [r, c], batch))
+                editor.cells.setdefault((r, c), obj_set)
+        # print(game_level.cells)
+
+
+def save_level(level_num):
+    with open('levels/' + str(level_num) + '.json', 'w', encoding='utf-8') as f:
         json_cells = []
         for cell in game_field.cells:
             json_cell = JsonCell.JsonCell(cell[0], cell[1])
@@ -81,7 +101,7 @@ def save_level():
             json_cells.append(json_cell)
 
         json_level = {}
-        json_level.setdefault("level", 4)
+        json_level.setdefault("level", level_num)
         json_level.setdefault("cells", json_cells)
 
         json.dump(json_level, f, cls=JsonCell.JsonCellEncoder, ensure_ascii=False, indent=4)
@@ -94,7 +114,6 @@ def update(dt):
 grid_batch = pyglet.graphics.Batch()
 editor_batch = pyglet.graphics.Batch()
 
-level_objects = []
 game_field = gamefield.GameField()
 level_editor = LevelEditor(editor_batch)
 
@@ -144,17 +163,18 @@ def on_key_press(symbol, modifiers):
     print("modifiers", str(modifiers))
     if symbol == key.S:
         if modifiers & key.MOD_CTRL:
-            save_level()
+            save_level(4)
             label.text = 'level saved'
+
 
 @window.event
 def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
     if buttons & mouse.LEFT:
         row, column = gamefield.get_cell_by_coords(x, y)
 
-
-        # set_selected_figure_on_gamefield(level_editor.selected_figure, row, column)
+        set_selected_figure_on_gamefield(level_editor.selected_figure, row, column)
         label.text = 'x: {0}, y:{1}, dx:{2}, dy:{3}'.format(x, y, dx, dy)
         # print('x: {0}, y:{1}, dx:{2}, dy:{dy}'.format(x, y, dx, dy))
+
 
 pyglet.app.run()

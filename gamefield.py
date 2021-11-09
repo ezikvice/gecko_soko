@@ -61,9 +61,8 @@ def load_level(level_number, game_level, batch):
         for cell in cells_dict:
             r = cell["r"]
             c = cell["c"]
-            num_arr = cell["objects"]
             obj_set = set()
-            for obj_id in num_arr:
+            for obj_id in cell["objects"]:
                 obj_set.add(build_game_object(obj_id, [r, c], batch))
                 game_level.cells.setdefault((r, c), obj_set)
         # print(game_level.cells)
