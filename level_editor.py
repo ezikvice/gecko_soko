@@ -94,12 +94,7 @@ def load_level(level_number, editor, batch):
 
 
 def save_level():
-    # root = tk.Tk()
-    # root.title('Tkinter Open File Dialog')
-    # root.resizable(False, False)
-    # root.geometry('300x150')
-    level_extensions  = [('level files', '*.lvl')]
-    filename = asksaveasfilename(title = 'Save file', filetypes = level_extensions, defaultextension = '.lvl')
+    filename = asksaveasfilename(title = 'Save file', filetypes = [('level files', '*.lvl')], defaultextension = '.lvl')
     if not filename: return
 
     with open(filename, 'w', encoding='utf-8') as f:
