@@ -137,6 +137,14 @@ def on_draw():
     label.draw()
 
 
+def clear_field_under_cursor(x, y):
+    row,column = gamefield.get_cell_by_coords(x, y)
+    current_objects = game_field.cells.get((row, column))
+    if current_objects is not None:
+        label.text = 'clear field under cursor'
+        game_field.cells.pop((row, column))
+
+
 @window.event
 def on_mouse_press(x, y, button, modifiers):
     if button == mouse.LEFT:
@@ -151,10 +159,20 @@ def on_mouse_press(x, y, button, modifiers):
             check_figure_under_mouse(x, y, level_editor.editor_figures)
             print(level_editor.selected_figure)
     elif button == mouse.RIGHT:
-        level_editor.selected_figure = None
-        label.text = 'right: {0}, is mouse on gamefield: {1}' \
-            .format(gamefield.get_cell_by_coords(x, y), gamefield.is_mouse_on_gamefield(x, y))
-        window.set_mouse_cursor(window.CURSOR_DEFAULT)
+        if level_editor.selected_figure is None:
+            clear_field_under_cursor(x, y)
+        else:
+            level_editor.selected_figure = None
+            label.text = 'right: {0}, is mouse on gamefield: {1}' \
+                .format(gamefield.get_cell_by_coords(x, y), gamefield.is_mouse_on_gamefield(x, y))
+            window.set_mouse_cursor(window.CURSOR_DEFAULT)
+
+
+def load_level_dialog():
+    # window = pyglet.window.Window(width=300, height=100, caption="Load level dialog")
+    # filename = fd.askopenfilename()
+    label.text = 'loading level'
+
 
 
 @window.event
@@ -165,6 +183,10 @@ def on_key_press(symbol, modifiers):
         if modifiers & key.MOD_CTRL:
             save_level(4)
             label.text = 'level saved'
+    if symbol == key.L:
+        if modifiers & key.MOD_CTRL:
+            load_level_dialog()
+
 
 
 @window.event
