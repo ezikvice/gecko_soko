@@ -4,6 +4,7 @@ import pyglet
 from pyglet import clock
 from pyglet.window import key
 from pyglet.window import mouse
+from tkinter.filedialog import asksaveasfilename
 
 import JsonCell
 import game_objects
@@ -92,19 +93,31 @@ def load_level(level_number, editor, batch):
         # print(game_level.cells)
 
 
-def save_level(level_num):
-    with open('levels/' + str(level_num) + '.json', 'w', encoding='utf-8') as f:
+def save_level():
+    # root = tk.Tk()
+    # root.title('Tkinter Open File Dialog')
+    # root.resizable(False, False)
+    # root.geometry('300x150')
+    level_extensions  = [('level files', '*.lvl')]
+    filename = asksaveasfilename(title = 'Save file', filetypes = level_extensions, defaultextension = '.lvl')
+    if not filename: return
+
+    with open(filename, 'w', encoding='utf-8') as f:
         json_cells = []
         for cell in game_field.cells:
             json_cell = JsonCell.JsonCell(cell[0], cell[1])
             json_cell.objects = game_field.cells[(json_cell.r, json_cell.c)]
             json_cells.append(json_cell)
 
+        splitted_name = f.name.split('/')
+        name_with_extension = splitted_name[len(splitted_name)-1]
+        name = name_with_extension.split('.')[0]
         json_level = {}
-        json_level.setdefault("level", level_num)
+        json_level.setdefault("level", name)
         json_level.setdefault("cells", json_cells)
 
         json.dump(json_level, f, cls=JsonCell.JsonCellEncoder, ensure_ascii=False, indent=4)
+        return 'saved'
 
 
 def update(dt):
@@ -181,7 +194,7 @@ def on_key_press(symbol, modifiers):
     print("modifiers", str(modifiers))
     if symbol == key.S:
         if modifiers & key.MOD_CTRL:
-            save_level(4)
+            save_level()
             label.text = 'level saved'
     if symbol == key.L:
         if modifiers & key.MOD_CTRL:
