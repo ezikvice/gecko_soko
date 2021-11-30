@@ -43,6 +43,10 @@ class LevelEditor:
         player = game_objects.Player(batch, [3, 10])
         self.editor_figures.append(player)
 
+    @staticmethod
+    def load_level_dialog():
+        label.text = 'loading level'
+
 
 def change_cursor(sprt):
     # TODO: делать (или передавать копию картинки, а не менять исходный объект)
@@ -192,8 +196,6 @@ def on_mouse_press(x, y, button, modifiers):
             window.set_mouse_cursor(window.CURSOR_DEFAULT)
 
 
-def load_level_dialog():
-    label.text = 'loading level'
 
 
 @window.event
@@ -206,7 +208,7 @@ def on_key_press(symbol, modifiers):
             label.text = 'level saved'
     if symbol == key.L:
         if modifiers & key.MOD_CTRL:
-            load_level_dialog()
+            LevelEditor.load_level_dialog()
 
 
 @window.event
