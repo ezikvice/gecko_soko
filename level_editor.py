@@ -8,12 +8,7 @@ from pyglet.window import mouse
 import JsonCell
 import game_objects
 import gamefield
-
-__author__ = 'Dmitry'
-
-# import main
 from fileDialogs import FileSaveDialog
-
 
 
 class LevelEditor:

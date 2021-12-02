@@ -1,10 +1,11 @@
+import os
 from concurrent.futures import ProcessPoolExecutor as _ProcessPoolExecutor
 
 from pyglet.event import EventDispatcher as _EventDispatcher
 
-import os
 
-# позаимствовал здесь: https://stackoverflow.com/questions/65716631/using-filedialog-askdirectory-with-tkinter-and-pyglet-freezes-the-application
+# позаимствовал здесь:
+# https://stackoverflow.com/questions/65716631/using-filedialog-askdirectory-with-tkinter-and-pyglet-freezes-the-application
 # TODO: разобраться с этим всем
 class _Dialog(_EventDispatcher):
     executor = _ProcessPoolExecutor(max_workers=1)
@@ -60,7 +61,6 @@ class FileSaveDialog(_Dialog):
     @staticmethod
     def _open_dialog(dialog):
         import tkinter as tk
-        from tkinter import filedialog
         root = tk.Tk()
         root.withdraw()
         return dialog.show()
