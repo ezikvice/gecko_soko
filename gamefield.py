@@ -5,8 +5,8 @@ import json
 import pyglet.media as media
 import pyglet.shapes as shapes
 
-import game_objects
 import game_metric
+import game_objects
 import resources as res
 
 
@@ -106,4 +106,3 @@ def draw_grid(batch, lines_arr):
                                      game_metric.COLUMNS_NUM * game_metric.CELL_SIZE + 1,
                                      640 - game_metric.CELL_SIZE * i - 1,
                                      width=1, color=grid_color, batch=batch))
-    # batch.draw()

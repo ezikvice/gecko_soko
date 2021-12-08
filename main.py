@@ -2,8 +2,8 @@ import numpy as np
 import pyglet
 from pyglet.window import key
 
-import gamefield
 import game_objects
+import gamefield
 from game_metric import *
 
 __author__ = 'Dmitry'
@@ -58,7 +58,7 @@ label2 = pyglet.text.Label('',
 def show_coords():
     label.text = '[{0}, {1}]'.format(game_level.player.row, game_level.player.column)
     label2.text = ''
-    print(game_level.cells)
+    # print(game_level.cells)
 
 
 def is_figure_in_cell(figure, cell):

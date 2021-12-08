@@ -68,8 +68,10 @@ class FileSaveDialog(_Dialog):
     def _dispatch_event(self, future):
         self.dispatch_event('on_dialog_save', future.result())
 
+    @staticmethod
     def on_dialog_save(self, filename):
         """Event for filename choice"""
+        print("FILENAMES ON SAVE!", filename)
         pass
 
 
