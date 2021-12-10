@@ -32,7 +32,7 @@ def load_next_level(level_number, game_level, batch):
         show_victory()
 
 
-load_next_level(2, game_level, batch)
+load_next_level(1, game_level, batch)
 
 
 window = pyglet.window.Window(width=(CELL_SIZE * 10), height=(CELL_SIZE * 10), caption="Gecko Soko")

@@ -6,6 +6,7 @@ from pyglet.window import key
 from pyglet.window import mouse
 
 import JsonCell
+import game_metric
 import game_objects
 import gamefield
 from fileDialogs import FileSaveDialog
@@ -38,8 +39,13 @@ class LevelEditor:
         player = game_objects.Player(self.editor_batch, [3, 10])
         self.editor_figures.append(player)
 
+    def clear_level(self):
+        self.game_field.cells.clear()
+
     def load_level_dialog(self):
         label.text = 'loading level'
+        self.clear_level()
+        load_level(1, self.game_field, self.gamefield_batch)
 
     def save_level(self):
         # root = Tk()
@@ -56,9 +62,10 @@ class LevelEditor:
             with open(filename, 'w', encoding='utf-8') as f:
                 json_cells = []
                 for cell in self.game_field.cells:
-                    json_cell = JsonCell.JsonCell(cell[0], cell[1])
-                    json_cell.objects = self.game_field.cells[(json_cell.r, json_cell.c)]
-                    json_cells.append(json_cell)
+                    if cell[0] < game_metric.ROWS_NUM and cell[1] < game_metric.COLUMNS_NUM:
+                        json_cell = JsonCell.JsonCell(cell[0], cell[1])
+                        json_cell.objects = self.game_field.cells[(json_cell.r, json_cell.c)]
+                        json_cells.append(json_cell)
 
                 splitted_name = f.name.split('/')
                 name_with_extension = splitted_name[len(splitted_name) - 1]

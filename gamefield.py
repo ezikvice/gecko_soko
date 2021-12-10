@@ -45,13 +45,13 @@ def build_game_object(o_id, cell_coords, batch):
         return game_objects.BoxTarget(batch, cell_coords)
 
 
-def clear_level(game_level, batch):
+def clear_level(game_level):
     game_level.cells.clear()
     game_level.player.delete()
 
 
 def load_level(level_number, game_level, batch):
-    clear_level(game_level, batch)
+    clear_level(game_level)
     with open('levels/' + level_number + '.json') as f:
         game_level.level = int(level_number)
         d = json.load(f)
