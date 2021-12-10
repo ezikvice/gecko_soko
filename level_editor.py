@@ -9,6 +9,7 @@ import JsonCell
 import game_metric
 import game_objects
 import gamefield
+from fileDialogs import FileOpenDialog
 from fileDialogs import FileSaveDialog
 
 
@@ -22,7 +23,7 @@ class LevelEditor:
 
     def __init__(self):
         self.set_editor_objects()
-        load_level(4, self.game_field, self.gamefield_batch)
+        load_level("levels/0.json", self.game_field, self.gamefield_batch)
 
     def set_selected(self, figure):
         self.selected_figure = figure
@@ -43,9 +44,14 @@ class LevelEditor:
         self.game_field.cells.clear()
 
     def load_level_dialog(self):
-        label.text = 'loading level'
-        self.clear_level()
-        load_level(1, self.game_field, self.gamefield_batch)
+        open_dialog = FileOpenDialog(filetypes=[("JSON", ".json"), ("LVL", ".lvl")], multiple=False)
+        open_dialog.open()
+
+        @open_dialog.event
+        def on_dialog_open(filename):
+            # label.text = 'loading level'
+            self.clear_level()
+            load_level(filename, self.game_field, self.gamefield_batch)
 
     def save_level(self):
         # root = Tk()
@@ -62,7 +68,7 @@ class LevelEditor:
             with open(filename, 'w', encoding='utf-8') as f:
                 json_cells = []
                 for cell in self.game_field.cells:
-                    if cell[0] < game_metric.ROWS_NUM and cell[1] < game_metric.COLUMNS_NUM:
+                    if 0 <= cell[0] < game_metric.ROWS_NUM and 0 <= cell[1] < game_metric.COLUMNS_NUM:
                         json_cell = JsonCell.JsonCell(cell[0], cell[1])
                         json_cell.objects = self.game_field.cells[(json_cell.r, json_cell.c)]
                         json_cells.append(json_cell)
@@ -126,10 +132,10 @@ def check_figure_under_mouse(x, y, figures_array):
             print("selected: " + str(level_editor.selected_figure))
 
 
-def load_level(level_number, editor, batch):
-    with open('levels/' + str(level_number) + '.json') as f:
-        editor.level = int(level_number)
+def load_level(filename, editor, batch):
+    with open(filename) as f:
         d = json.load(f)
+        editor.level = int(d["level"])
         cells_dict = d["cells"]
         # print(cell)
 
