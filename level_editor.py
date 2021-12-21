@@ -58,7 +58,7 @@ class LevelEditor:
         # root.filename = asksaveasfilename(title='Save file', filetypes=[('level files', '*.lvl')], defaultextension='.lvl')
         # if not root.filename: return
 
-        save_as = FileSaveDialog(initial_file="test", filetypes=[('level files', '*.lvl')])
+        save_as = FileSaveDialog(initial_file="test", filetypes=[('level files', '*.json')])
         save_as.open()
 
         @save_as.event
