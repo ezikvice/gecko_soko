@@ -18,15 +18,26 @@ batch = pyglet.graphics.Batch()
 game_level = gamefield.GameField()
 # game_field.music.play()
 
+label = pyglet.text.Label('',
+                          font_name='Arial',
+                          font_size=24,
+                          x=310, y=10,
+                          anchor_x='right', anchor_y='baseline')
+
 
 def show_victory():
     label2.text = 'VICTORY!'
+
+
+def show_level(level_number):
+    label.text = 'Level ' + str(level_number)
 
 
 def load_next_level(level_number, game_level, batch):
     try:
         gamefield.load_level(str(level_number), game_level, batch)
         game_level.player = gamefield.find_player(game_level.cells)
+        show_level(level_number)
     except IOError:
         print("END GAME")
         show_victory()
@@ -41,11 +52,6 @@ window.set_mouse_visible(True)
 fps_display = pyglet.window.FPSDisplay(window)
 fps_display.label.y = 0
 
-label = pyglet.text.Label('[{0}, {1}]'.format(game_level.player.row, game_level.player.column),
-                          font_name='Times New Roman',
-                          font_size=36,
-                          x=410, y=10,
-                          anchor_x='right', anchor_y='baseline')
 
 label2 = pyglet.text.Label('',
                            font_name='Times New Roman',
@@ -127,7 +133,6 @@ def on_text_motion(motion):
         if can_move(game_level.player, direction):
             game_level.player.image = game_level.player.views['up']
             game_level.player.move(direction)
-        show_coords()
         if check_win():
             # label2.text = 'VICTORY!'
             load_next_level(game_level.level + 1, game_level, batch)
@@ -136,7 +141,6 @@ def on_text_motion(motion):
         if can_move(game_level.player, direction):
             game_level.player.image = game_level.player.views['down']
             game_level.player.move(direction)
-        show_coords()
         if check_win():
             # label2.text = 'VICTORY!'
             load_next_level(game_level.level + 1, game_level, batch)
@@ -145,7 +149,6 @@ def on_text_motion(motion):
         if can_move(game_level.player, direction):
             game_level.player.image = game_level.player.views['left']
             game_level.player.move(direction)
-        show_coords()
         if check_win():
             # label2.text = 'VICTORY!'
             load_next_level(game_level.level + 1, game_level, batch)
@@ -154,7 +157,6 @@ def on_text_motion(motion):
         if can_move(game_level.player, direction):
             game_level.player.image = game_level.player.views['right']
             game_level.player.move(direction)
-        show_coords()
         if check_win():
             # label2.text = 'VICTORY!'
             load_next_level(game_level.level + 1, game_level, batch)
