@@ -109,7 +109,6 @@ def can_move(obj, direction):
 
 
 # если во всех мишенях коробки, то возвращаем True и показываем, что уровень пройден
-# TODO: переход на следующий уровень и если уровней больше не осталось, то победа!
 def check_win():
     for cell in game_level.cells:
         if game_objects.BoxTarget(None, (0, 0)) in game_level.cells[cell] \
@@ -126,40 +125,23 @@ def get_object_in_set(needed_object, obj_set):
     return None
 
 
+motions = {key.MOTION_UP: [-1, 0], key.MOTION_DOWN: [1, 0], key.MOTION_LEFT: [0, -1], key.MOTION_RIGHT: [0, 1]}
+player_views = {key.MOTION_UP: 'up', key.MOTION_DOWN: 'down', key.MOTION_LEFT: 'left', key.MOTION_RIGHT: 'right'}
+
+
+def move_player(motion):
+    if motion in motions.keys():
+        direction = motions.get(motion)
+        if can_move(game_level.player, direction):
+            game_level.player.image = game_level.player.views[player_views.get(motion)]
+            game_level.player.move(direction)
+        if check_win():
+            load_next_level(game_level.level + 1, game_level, batch)
+
+
 @window.event
 def on_text_motion(motion):
-    if motion == key.MOTION_UP:  # координаты по y обращены для удобства
-        direction = [-1, 0]
-        if can_move(game_level.player, direction):
-            game_level.player.image = game_level.player.views['up']
-            game_level.player.move(direction)
-        if check_win():
-            # label2.text = 'VICTORY!'
-            load_next_level(game_level.level + 1, game_level, batch)
-    if motion == key.MOTION_DOWN:  # координаты по y обращены для удобства
-        direction = [1, 0]
-        if can_move(game_level.player, direction):
-            game_level.player.image = game_level.player.views['down']
-            game_level.player.move(direction)
-        if check_win():
-            # label2.text = 'VICTORY!'
-            load_next_level(game_level.level + 1, game_level, batch)
-    if motion == key.MOTION_LEFT:
-        direction = [0, -1]
-        if can_move(game_level.player, direction):
-            game_level.player.image = game_level.player.views['left']
-            game_level.player.move(direction)
-        if check_win():
-            # label2.text = 'VICTORY!'
-            load_next_level(game_level.level + 1, game_level, batch)
-    if motion == key.MOTION_RIGHT:
-        direction = [0, 1]
-        if can_move(game_level.player, direction):
-            game_level.player.image = game_level.player.views['right']
-            game_level.player.move(direction)
-        if check_win():
-            # label2.text = 'VICTORY!'
-            load_next_level(game_level.level + 1, game_level, batch)
+    move_player(motion)
 
 
 @window.event
