@@ -1,9 +1,7 @@
 import pyglet
-
-pyglet.options['audio'] = ('directsound', 'silent')
-
 import pyglet.resource as res
 
+pyglet.options['audio'] = ('directsound', 'silent')
 res.path = ["res", "res/sound"]
 res.reindex()
 

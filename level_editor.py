@@ -23,7 +23,7 @@ class LevelEditor:
 
     def __init__(self):
         self.set_editor_objects()
-        load_level("levels/0.json", self.game_field, self.gamefield_batch)
+        # load_level("levels/0.json", self.game_field, self.gamefield_batch)
 
     def set_selected(self, figure):
         self.selected_figure = figure
@@ -54,10 +54,6 @@ class LevelEditor:
             load_level(filename, self.game_field, self.gamefield_batch)
 
     def save_level(self):
-        # root = Tk()
-        # root.filename = asksaveasfilename(title='Save file', filetypes=[('level files', '*.lvl')], defaultextension='.lvl')
-        # if not root.filename: return
-
         save_as = FileSaveDialog(initial_file="test", filetypes=[('level files', '*.json')])
         save_as.open()
 
@@ -107,7 +103,7 @@ class LevelEditor:
         print("figure #" + str(figure))
 
     def clear_field_under_cursor(self, x, y):
-        row, column = gamefield.get_cell_by_coords(x, y)
+        row, column = self.game_field.get_cell_by_coords(x, y)
         current_objects = self.game_field.cells.get((row, column))
         if current_objects is not None:
             label.text = 'clear field under cursor'
@@ -144,7 +140,7 @@ def load_level(filename, editor, batch):
             c = cell["c"]
             obj_set = set()
             for obj_id in cell["objects"]:
-                obj_set.add(gamefield.build_game_object(obj_id, [r, c], batch))
+                obj_set.add(editor.build_game_object(obj_id, [r, c], batch))
                 editor.cells.setdefault((r, c), obj_set)
         # print(game_level.cells)
 
@@ -158,68 +154,70 @@ def update(dt):
     pass
 
 
-level_editor = LevelEditor()
+if __name__ == "__main__":
+    level_editor = LevelEditor()
 
-window = pyglet.window.Window(width=800, height=640, caption="Level Editor")
-window.set_mouse_visible()
+    window = pyglet.window.Window(width=800, height=640, caption="Level Editor")
+    window.set_mouse_visible()
 
-label = pyglet.text.Label('', font_name='Times New Roman', font_size=16, x=410, y=10,
-                          anchor_x='right', anchor_y='baseline')
+    label = pyglet.text.Label('', font_name='Times New Roman', font_size=16, x=410, y=10,
+                              anchor_x='right', anchor_y='baseline')
 
-clock.schedule(update)
-grid_array = []
-gamefield.draw_grid(LevelEditor.grid_batch, grid_array)
-
-
-@window.event
-def on_draw():
-    level_editor.draw()
+    grid_array = []
+    level_editor.game_field.draw_grid(LevelEditor.grid_batch, grid_array)
 
 
-@window.event
-def on_mouse_press(x, y, button, modifiers):
-    if button == mouse.LEFT:
-        if gamefield.is_mouse_on_gamefield(x, y):
-            # ставим выделенную фигуру
-            row, column = gamefield.get_cell_by_coords(x, y)
-            try:
-                level_editor.set_selected_figure_on_gamefield(level_editor.selected_figure, row, column)
-            except AttributeError:
-                print("Объект не выделен")
-        else:
-            check_figure_under_mouse(x, y, level_editor.editor_figures)
-            print(level_editor.selected_figure)
-    elif button == mouse.RIGHT:
-        if level_editor.selected_figure is None:
-            level_editor.clear_field_under_cursor(x, y)
-        else:
-            level_editor.selected_figure = None
-            label.text = 'right: {0}, is mouse on gamefield: {1}' \
-                .format(gamefield.get_cell_by_coords(x, y), gamefield.is_mouse_on_gamefield(x, y))
-            window.set_mouse_cursor(window.CURSOR_DEFAULT)
+    @window.event
+    def on_draw():
+        level_editor.draw()
 
 
-@window.event
-def on_key_press(symbol, modifiers):
-    print("symbol:" + str(symbol))
-    print("modifiers", str(modifiers))
-    if symbol == key.S:
-        if modifiers & key.MOD_CTRL:
-            level_editor.save_level()
-            label.text = 'level saved'
-    if symbol == key.L:
-        if modifiers & key.MOD_CTRL:
-            level_editor.load_level_dialog()
+    @window.event
+    def on_mouse_press(x, y, button, modifiers):
+        if button == mouse.LEFT:
+            if level_editor.game_field.is_mouse_on_gamefield(x, y):
+                # ставим выделенную фигуру
+                row, column = level_editor.game_field.get_cell_by_coords(x, y)
+                try:
+                    level_editor.set_selected_figure_on_gamefield(level_editor.selected_figure, row, column)
+                except AttributeError:
+                    print("Объект не выделен")
+            else:
+                check_figure_under_mouse(x, y, level_editor.editor_figures)
+                print(level_editor.selected_figure)
+        elif button == mouse.RIGHT:
+            if level_editor.selected_figure is None:
+                level_editor.clear_field_under_cursor(x, y)
+            else:
+                level_editor.selected_figure = None
+                label.text = 'right: {0}, is mouse on gamefield: {1}' \
+                    .format(level_editor.game_field.get_cell_by_coords(x, y),
+                            level_editor.game_field.is_mouse_on_gamefield(x, y))
+                window.set_mouse_cursor(window.CURSOR_DEFAULT)
 
 
-@window.event
-def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
-    if buttons & mouse.LEFT:
-        row, column = gamefield.get_cell_by_coords(x, y)
+    @window.event
+    def on_key_press(symbol, modifiers):
+        print("symbol:" + str(symbol))
+        print("modifiers", str(modifiers))
+        if symbol == key.S:
+            if modifiers & key.MOD_CTRL:
+                level_editor.save_level()
+                label.text = 'level saved'
+        if symbol == key.L:
+            if modifiers & key.MOD_CTRL:
+                level_editor.load_level_dialog()
 
-        level_editor.set_selected_figure_on_gamefield(level_editor.selected_figure, row, column)
-        label.text = 'x: {0}, y:{1}, dx:{2}, dy:{3}'.format(x, y, dx, dy)
-        # print('x: {0}, y:{1}, dx:{2}, dy:{dy}'.format(x, y, dx, dy))
+
+    @window.event
+    def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
+        if buttons & mouse.LEFT:
+            row, column = level_editor.game_field.get_cell_by_coords(x, y)
+
+            level_editor.set_selected_figure_on_gamefield(level_editor.selected_figure, row, column)
+            label.text = 'x: {0}, y:{1}, dx:{2}, dy:{3}'.format(x, y, dx, dy)
+            # print('x: {0}, y:{1}, dx:{2}, dy:{dy}'.format(x, y, dx, dy))
 
 
-pyglet.app.run()
+    clock.schedule(update)
+    pyglet.app.run()
