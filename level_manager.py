@@ -2,9 +2,9 @@
 import json
 from tkinter import Tk, filedialog
 
-import JsonCell
 import game_metric
 import game_objects
+import jsoncell
 
 
 def open_level(filename, editor, batch):
@@ -37,7 +37,7 @@ def save_level(editor):
         for cell in editor.game_field.cells:
             if 0 <= cell[0] < game_metric.ROWS_NUM \
                     and 0 <= cell[1] < game_metric.COLUMNS_NUM:
-                json_cell = JsonCell.JsonCell(cell[0], cell[1])
+                json_cell = jsoncell.JsonCell(cell[0], cell[1])
                 json_cell.objects = editor.game_field.cells[
                     (json_cell.r, json_cell.c)]
                 json_cells.append(json_cell)
@@ -49,6 +49,6 @@ def save_level(editor):
         json_level.setdefault("level", name)
         json_level.setdefault("cells", json_cells)
 
-        json.dump(json_level, f, cls=JsonCell.JsonCellEncoder,
+        json.dump(json_level, f, cls=jsoncell.JsonCellEncoder,
                   ensure_ascii=False, indent=4)
         return 'saved'
