@@ -40,24 +40,26 @@ class GameField:
             lines_arr.append(shapes.Line(game_metric.CELL_SIZE * i + 1, 640 - 1,
                                          game_metric.CELL_SIZE * i + 1,
                                          640 - game_metric.COLUMNS_NUM * game_metric.CELL_SIZE - 1,
-                                         width=1, color=grid_color, batch=batch))
+                                         width=1, color=grid_color,
+                                         batch=batch))
         for i in range(game_metric.COLUMNS_NUM + 1):
             lines_arr.append(shapes.Line(1, 640 - game_metric.CELL_SIZE * i - 1,
                                          game_metric.COLUMNS_NUM * game_metric.CELL_SIZE + 1,
                                          640 - game_metric.CELL_SIZE * i - 1,
-                                         width=1, color=grid_color, batch=batch))
+                                         width=1, color=grid_color,
+                                         batch=batch))
 
-    def build_game_object(self, o_id, cell_coords, batch):
-        if o_id == 1:
-            return game_objects.Player(batch, cell_coords)
-        elif o_id == 2:
-            return game_objects.Tree(batch, cell_coords)
-        elif o_id == 3:
-            return game_objects.Brick(batch, cell_coords)
-        elif o_id == 4:
-            return game_objects.Box(batch, cell_coords)
-        elif o_id == 10:
-            return game_objects.BoxTarget(batch, cell_coords)
+    # def build_game_object(self, o_id, cell_coords, batch):
+    #     if o_id == 1:
+    #         return game_objects.Player(batch, cell_coords)
+    #     elif o_id == 2:
+    #         return game_objects.Tree(batch, cell_coords)
+    #     elif o_id == 3:
+    #         return game_objects.Brick(batch, cell_coords)
+    #     elif o_id == 4:
+    #         return game_objects.Box(batch, cell_coords)
+    #     elif o_id == 10:
+    #         return game_objects.BoxTarget(batch, cell_coords)
 
     def clear_level(self, game_level):
         game_level.cells.clear()
@@ -76,7 +78,8 @@ class GameField:
                 c = cell["c"]
                 obj_set = set()
                 for obj_id in cell["objects"]:
-                    obj_set.add(self.build_game_object(obj_id, [r, c], batch))
+                    obj_set.add(game_objects.build_game_object(obj_id, [r, c],
+                                                               batch))
                     game_level.cells.setdefault((r, c), obj_set)
             # print(game_level.cells)
 

@@ -2,8 +2,10 @@
 #
 import json
 
+import game_objects
 
-def load_level(filename, editor, batch):
+
+def open_level(filename, editor, batch):
     with open(filename) as f:
         d = json.load(f)
         editor.level = int(d["level"])
@@ -15,6 +17,7 @@ def load_level(filename, editor, batch):
             c = cell["c"]
             obj_set = set()
             for obj_id in cell["objects"]:
-                obj_set.add(gamefield.build_game_object(obj_id, [r, c], batch))
+                obj_set.add(
+                    game_objects.build_game_object(obj_id, [r, c], batch))
                 editor.cells.setdefault((r, c), obj_set)
         # print(game_level.cells)

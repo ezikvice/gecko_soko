@@ -9,6 +9,7 @@ import JsonCell
 import game_metric
 import game_objects
 import gamefield
+import level_manager
 from fileDialogs import FileOpenDialog
 from fileDialogs import FileSaveDialog
 
@@ -16,14 +17,19 @@ from fileDialogs import FileSaveDialog
 class LevelEditor:
     selected_figure = None
     editor_figures = []
-    game_field = gamefield.GameField()
-    gamefield_batch = pyglet.graphics.Batch()
-    grid_batch = pyglet.graphics.Batch()
-    editor_batch = pyglet.graphics.Batch()
+    game_field = None
+    gamefield_batch = None
+    grid_batch = None
+    editor_batch = None
 
     def __init__(self):
+        self.game_field = gamefield.GameField()
+        self.gamefield_batch = pyglet.graphics.Batch()
+        self.grid_batch = pyglet.graphics.Batch()
+        self.editor_batch = pyglet.graphics.Batch()
         self.set_editor_objects()
-        # load_level("levels/0.json", self.game_field, self.gamefield_batch)
+        level_manager.open_level("levels/0.json", self.game_field,
+                                 self.gamefield_batch)
 
     def set_selected(self, figure):
         self.selected_figure = figure
@@ -50,8 +56,10 @@ class LevelEditor:
         @open_dialog.event
         def on_dialog_open(filename):
             # label.text = 'loading level'
+            print(filename)
             self.clear_level()
-            load_level(filename, self.game_field, self.gamefield_batch)
+            level_manager.open_level(filename, self.game_field,
+                                     self.gamefield_batch)
 
     def save_level(self):
         save_as = FileSaveDialog(initial_file="test", filetypes=[('level files', '*.json')])
@@ -94,7 +102,8 @@ class LevelEditor:
         if self.game_field.cells.get((row, column)) is not None:
             obj_set = self.game_field.cells[(row, column)]
 
-        obj_set.add(game_objects.build_game_object(figure.obj_id, current_cell, LevelEditor.gamefield_batch))
+        obj_set.add(game_objects.build_game_object(figure.obj_id, current_cell,
+                                                   level_editor.gamefield_batch))
         self.game_field.cells.setdefault((row, column), obj_set)
 
         print(self.game_field.cells.get((row, column)))
@@ -113,9 +122,8 @@ class LevelEditor:
 def change_cursor(sprt):
     # TODO: делать (или передавать копию картинки, а не менять исходный объект)
     img = sprt
-    # img.scale = 1.1
-    # img.opacity = 128
-    current_cursor = pyglet.window.ImageMouseCursor(img.image, img.width / 2, img.height / 2)
+    current_cursor = pyglet.window.ImageMouseCursor(img.image, img.width / 2,
+                                                    img.height / 2)
     window.set_mouse_cursor(current_cursor)
 
 
@@ -128,43 +136,17 @@ def check_figure_under_mouse(x, y, figures_array):
             print("selected: " + str(level_editor.selected_figure))
 
 
-def load_level(filename, editor, batch):
-    with open(filename) as f:
-        d = json.load(f)
-        editor.level = int(d["level"])
-        cells_dict = d["cells"]
-        # print(cell)
-
-        for cell in cells_dict:
-            r = cell["r"]
-            c = cell["c"]
-            obj_set = set()
-            for obj_id in cell["objects"]:
-                obj_set.add(editor.build_game_object(obj_id, [r, c], batch))
-                editor.cells.setdefault((r, c), obj_set)
-        # print(game_level.cells)
-
-
-# @save_as.event
-# def on_dialog_save(filename):
-#    print("FILENAMES ON SAVE! FROM SAVE_AS EVENT", filename)
-
-
-def update(dt):
-    pass
-
-
 if __name__ == "__main__":
-    level_editor = LevelEditor()
-
     window = pyglet.window.Window(width=800, height=640, caption="Level Editor")
     window.set_mouse_visible()
 
-    label = pyglet.text.Label('', font_name='Times New Roman', font_size=16, x=410, y=10,
+    label = pyglet.text.Label('', font_name='Times New Roman', font_size=16,
+                              x=410, y=10,
                               anchor_x='right', anchor_y='baseline')
+    level_editor = LevelEditor()
 
     grid_array = []
-    level_editor.game_field.draw_grid(LevelEditor.grid_batch, grid_array)
+    level_editor.game_field.draw_grid(level_editor.grid_batch, grid_array)
 
 
     @window.event
@@ -179,7 +161,8 @@ if __name__ == "__main__":
                 # ставим выделенную фигуру
                 row, column = level_editor.game_field.get_cell_by_coords(x, y)
                 try:
-                    level_editor.set_selected_figure_on_gamefield(level_editor.selected_figure, row, column)
+                    level_editor.set_selected_figure_on_gamefield(
+                        level_editor.selected_figure, row, column)
                 except AttributeError:
                     print("Объект не выделен")
             else:
@@ -214,9 +197,14 @@ if __name__ == "__main__":
         if buttons & mouse.LEFT:
             row, column = level_editor.game_field.get_cell_by_coords(x, y)
 
-            level_editor.set_selected_figure_on_gamefield(level_editor.selected_figure, row, column)
+            level_editor.set_selected_figure_on_gamefield(
+                level_editor.selected_figure, row, column)
             label.text = 'x: {0}, y:{1}, dx:{2}, dy:{3}'.format(x, y, dx, dy)
             # print('x: {0}, y:{1}, dx:{2}, dy:{dy}'.format(x, y, dx, dy))
+
+
+    def update(dt):
+        pass
 
 
     clock.schedule(update)
