@@ -1,4 +1,5 @@
 import json
+from tkinter import Tk, filedialog
 
 import pyglet
 from pyglet import clock
@@ -10,7 +11,6 @@ import game_metric
 import game_objects
 import gamefield
 import level_manager
-from fileDialogs import FileOpenDialog
 from fileDialogs import FileSaveDialog
 
 
@@ -50,19 +50,20 @@ class LevelEditor:
         self.game_field.cells.clear()
 
     def load_level_dialog(self):
-        open_dialog = FileOpenDialog(filetypes=[("JSON", ".json"), ("LVL", ".lvl")], multiple=False)
-        open_dialog.open()
-
-        @open_dialog.event
-        def on_dialog_open(filename):
-            # label.text = 'loading level'
-            print(filename)
-            self.clear_level()
-            level_manager.open_level(filename, self.game_field,
-                                     self.gamefield_batch)
+        root = Tk()
+        root.withdraw()
+        root.filename = filedialog.askopenfilename(initialdir="./levels/",
+                                                   title="Select file",
+                                                   filetypes=[("JSON", ".json"),
+                                                              ("LVL", ".lvl")],
+                                                   multiple=False)
+        self.clear_level()
+        level_manager.open_level(root.filename, self.game_field,
+                                 self.gamefield_batch)
 
     def save_level(self):
-        save_as = FileSaveDialog(initial_file="test", filetypes=[('level files', '*.json')])
+        save_as = FileSaveDialog(initial_file="test",
+                                 filetypes=[('level files', '*.json')])
         save_as.open()
 
         @save_as.event
@@ -72,9 +73,11 @@ class LevelEditor:
             with open(filename, 'w', encoding='utf-8') as f:
                 json_cells = []
                 for cell in self.game_field.cells:
-                    if 0 <= cell[0] < game_metric.ROWS_NUM and 0 <= cell[1] < game_metric.COLUMNS_NUM:
+                    if 0 <= cell[0] < game_metric.ROWS_NUM \
+                            and 0 <= cell[1] < game_metric.COLUMNS_NUM:
                         json_cell = JsonCell.JsonCell(cell[0], cell[1])
-                        json_cell.objects = self.game_field.cells[(json_cell.r, json_cell.c)]
+                        json_cell.objects = self.game_field.cells[
+                            (json_cell.r, json_cell.c)]
                         json_cells.append(json_cell)
 
                 splitted_name = f.name.split('/')
@@ -84,7 +87,8 @@ class LevelEditor:
                 json_level.setdefault("level", name)
                 json_level.setdefault("cells", json_cells)
 
-                json.dump(json_level, f, cls=JsonCell.JsonCellEncoder, ensure_ascii=False, indent=4)
+                json.dump(json_level, f, cls=JsonCell.JsonCellEncoder,
+                          ensure_ascii=False, indent=4)
                 return 'saved'
 
     def draw(self):
