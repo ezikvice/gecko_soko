@@ -2,9 +2,9 @@ import numpy as np
 import pyglet
 from pyglet.window import key
 
-import game_objects
 import gamefield
 from game_metric import *
+from game_objects import Box, Brick, BoxTarget
 
 __author__ = 'Dmitry'
 
@@ -15,7 +15,7 @@ pyglet.resource.reindex()
 
 batch = pyglet.graphics.Batch()
 
-game_level = gamefield.GameField()
+lvl = gamefield.GameField()
 # game_field.music.play()
 
 label = pyglet.text.Label('',
@@ -43,15 +43,14 @@ def load_next_level(level_number, game_level, batch):
         show_victory()
 
 
-load_next_level(1, game_level, batch)
+load_next_level(1, lvl, batch)
 
-
-window = pyglet.window.Window(width=(CELL_SIZE * 10), height=(CELL_SIZE * 10), caption="Gecko Soko")
+window = pyglet.window.Window(width=(CELL_SIZE * 10), height=(CELL_SIZE * 10),
+                              caption="Gecko Soko")
 window.set_mouse_visible(True)
 
 fps_display = pyglet.window.FPSDisplay(window)
 fps_display.label.y = 0
-
 
 label2 = pyglet.text.Label('',
                            font_name='Times New Roman',
@@ -62,13 +61,13 @@ label2 = pyglet.text.Label('',
 
 
 def show_coords():
-    label.text = '[{0}, {1}]'.format(game_level.player.row, game_level.player.column)
+    label.text = '[{0}, {1}]'.format(lvl.player.row, lvl.player.column)
     label2.text = ''
     # print(game_level.cells)
 
 
 def is_figure_in_cell(figure, cell):
-    cell_set = game_level.cells.get((cell[0], cell[1]))
+    cell_set = lvl.cells.get((cell[0], cell[1]))
     if cell_set is not None and figure in cell_set:
         return True
     return False
@@ -79,40 +78,41 @@ def can_move(obj, direction):
     next_cell = np.add([obj.row, obj.column], direction)
     next_cell.tolist()
     r, c = next_cell
-    if is_figure_in_cell(game_objects.Brick(None, next_cell), next_cell):
+    if is_figure_in_cell(Brick(None, next_cell), next_cell):
         return False
     else:
         # проверяем, если это ящик, то что за ним
         old_r = r
         old_c = c
-        if is_figure_in_cell(game_objects.Box(None, next_cell), next_cell):
+        if is_figure_in_cell(Box(None, next_cell), next_cell):
             next_cell = np.add(next_cell, direction)
             next_cell.tolist()
-            if is_figure_in_cell(game_objects.Box(None, next_cell), next_cell) or is_figure_in_cell(
-                    game_objects.Brick(None, next_cell), next_cell):
+            if is_figure_in_cell(Box(None, next_cell), next_cell) or \
+                    is_figure_in_cell(Brick(None, next_cell), next_cell):
                 return False
             else:
-                old_obj_set = game_level.cells.get((old_r, old_c))
-                box = get_object_in_set(game_objects.Box, old_obj_set)
+                old_obj_set = lvl.cells.get((old_r, old_c))
+                box = get_object_in_set(Box, old_obj_set)
                 old_obj_set.remove(box)
                 if len(old_obj_set) == 0:
-                    del game_level.cells[(old_r, old_c)]
+                    del lvl.cells[(old_r, old_c)]
                 box.move(direction)
-                next_cell_objects = game_level.cells.get((next_cell[0], next_cell[1]))
+                next_cell_objects = lvl.cells.get((next_cell[0], next_cell[1]))
                 if next_cell_objects is None:
                     next_obj_set = set()
                 else:
-                    next_obj_set = set(game_level.cells.get((next_cell[0], next_cell[1])))
+                    next_obj_set = set(
+                        lvl.cells.get((next_cell[0], next_cell[1])))
                 next_obj_set.add(box)
-                game_level.cells[(next_cell[0], next_cell[1])] = next_obj_set
+                lvl.cells[(next_cell[0], next_cell[1])] = next_obj_set
     return True
 
 
 # если во всех мишенях коробки, то возвращаем True и показываем, что уровень пройден
 def check_win():
-    for cell in game_level.cells:
-        if game_objects.BoxTarget(None, (0, 0)) in game_level.cells[cell] \
-                and game_objects.Box(None, (0, 0)) not in game_level.cells[cell]:
+    for cell in lvl.cells:
+        if BoxTarget(None, (0, 0)) in lvl.cells[cell] \
+                and Box(None, (0, 0)) not in lvl.cells[cell]:
             return False
     return True
 
@@ -125,18 +125,24 @@ def get_object_in_set(needed_object, obj_set):
     return None
 
 
-motions = {key.MOTION_UP: [-1, 0], key.MOTION_DOWN: [1, 0], key.MOTION_LEFT: [0, -1], key.MOTION_RIGHT: [0, 1]}
-player_views = {key.MOTION_UP: 'up', key.MOTION_DOWN: 'down', key.MOTION_LEFT: 'left', key.MOTION_RIGHT: 'right'}
+motions = {key.MOTION_UP: [-1, 0],
+           key.MOTION_DOWN: [1, 0],
+           key.MOTION_LEFT: [0, -1],
+           key.MOTION_RIGHT: [0, 1]}
+player_views = {key.MOTION_UP: 'up',
+                key.MOTION_DOWN: 'down',
+                key.MOTION_LEFT: 'left',
+                key.MOTION_RIGHT: 'right'}
 
 
 def move_player(motion):
     if motion in motions.keys():
         direction = motions.get(motion)
-        if can_move(game_level.player, direction):
-            game_level.player.image = game_level.player.views[player_views.get(motion)]
-            game_level.player.move(direction)
+        if can_move(lvl.player, direction):
+            lvl.player.image = lvl.player.views[player_views.get(motion)]
+            lvl.player.move(direction)
         if check_win():
-            load_next_level(game_level.level + 1, game_level, batch)
+            load_next_level(lvl.level + 1, lvl, batch)
 
 
 @window.event
@@ -147,13 +153,16 @@ def on_text_motion(motion):
 @window.event
 def on_key_press(symbol, modifiers):
     if symbol == key.M:
-        game_level.music.pause()
+        lvl.music.pause()
     if symbol == key.P:
-        game_level.music.play()
+        lvl.music.play()
     if symbol == key.PAGEUP:
-        game_level.music.volume += 0.05
+        lvl.music.volume += 0.05
     if symbol == key.PAGEDOWN:
-        game_level.music.volume -= 0.05
+        lvl.music.volume -= 0.05
+    if symbol == key.Z:
+        if modifiers & key.MOD_CTRL:
+            print("undo()")
 
 
 @window.event
