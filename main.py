@@ -39,8 +39,9 @@ def show_level(level_number):
 
 def load_next_level(level_number, game_level, batch):
     try:
-        game_level.load_level(str(level_number), game_level, batch)
+        game_level.load_level(str(level_number), batch)
         game_level.player = gamefield.find_player(game_level.cells)
+        undo_redo.clear_history()
         show_level(level_number)
     except IOError:
         print("END GAME")

@@ -49,14 +49,14 @@ class GameField:
                                          width=1, color=grid_color,
                                          batch=batch))
 
-    def clear_level(self, game_level):
-        game_level.cells.clear()
-        game_level.player.delete()
+    def clear_level(self):
+        self.cells.clear()
+        self.player.delete()
 
-    def load_level(self, level_number, game_level, batch):
-        self.clear_level(game_level)
+    def load_level(self, level_number, batch):
+        self.clear_level()
         with open('levels/' + level_number + '.json') as f:
-            game_level.level = int(level_number)
+            self.level = int(level_number)
             d = json.load(f)
             cells_dict = d["cells"]
             # print(cell)
@@ -68,7 +68,7 @@ class GameField:
                 for obj_id in cell["objects"]:
                     obj_set.add(game_objects.build_game_object(obj_id, [r, c],
                                                                batch))
-                    game_level.cells.setdefault((r, c), obj_set)
+                    self.cells.setdefault((r, c), obj_set)
             # print(game_level.cells)
 
     def get_cell_by_coords(self, x, y):
