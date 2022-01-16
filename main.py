@@ -3,6 +3,7 @@ import pyglet
 from pyglet.window import key
 
 import gamefield
+import undo_redo
 from game_metric import *
 from game_objects import Box, Brick, BoxTarget
 
@@ -16,6 +17,9 @@ pyglet.resource.reindex()
 batch = pyglet.graphics.Batch()
 
 lvl = gamefield.GameField()
+
+undo_redo = undo_redo.UndoRedo()
+
 # game_field.music.play()
 
 label = pyglet.text.Label('',
@@ -36,7 +40,7 @@ def show_level(level_number):
 def load_next_level(level_number, game_level, batch):
     try:
         game_level.load_level(str(level_number), game_level, batch)
-        game_level.player = game_level.find_player(game_level.cells)
+        game_level.player = gamefield.find_player(game_level.cells)
         show_level(level_number)
     except IOError:
         print("END GAME")
@@ -93,6 +97,7 @@ def can_move(obj, direction):
             else:
                 old_obj_set = lvl.cells.get((old_r, old_c))
                 box = get_object_in_set(Box, old_obj_set)
+                undo_redo.add_to_history(lvl.cells)
                 old_obj_set.remove(box)
                 if len(old_obj_set) == 0:
                     del lvl.cells[(old_r, old_c)]

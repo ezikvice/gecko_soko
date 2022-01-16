@@ -76,17 +76,27 @@ class GameField:
         column = x // game_metric.CELL_SIZE
         return row, column
 
-    def find_player(self, cells):
-        for cell in cells:
-            if cells[cell] is not None:
-                for obj in cells[cell]:
-                    if isinstance(obj, game_objects.Player):
-                        return obj
-        return None
-
     # TODO: можно через get_cell_by_coords
     def is_mouse_on_gamefield(self, x, y):
         if (x // game_metric.CELL_SIZE < game_metric.COLUMNS_NUM) & (
-                (game_metric.COLUMNS_NUM - y // game_metric.CELL_SIZE) < game_metric.ROWS_NUM):
+                (
+                        game_metric.COLUMNS_NUM - y // game_metric.CELL_SIZE) < game_metric.ROWS_NUM):
             return True
         return False
+
+
+def find_player(cells):
+    for cell in cells:
+        if cells[cell] is not None:
+            for obj in cells[cell]:
+                if isinstance(obj, game_objects.Player):
+                    return obj
+    return None
+
+
+def get_object_in_set(needed_object, obj_set):
+    for obj in obj_set:
+        if obj is not None:
+            if isinstance(obj, needed_object):
+                return obj
+    return None
