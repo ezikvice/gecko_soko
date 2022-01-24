@@ -1,4 +1,5 @@
 import numpy as np
+import pyglet
 import pyglet.sprite as sprite
 
 import resources as res
@@ -11,9 +12,11 @@ __author__ = 'Dmitry'
 # TODO: game_metric вынести в конфиг (может, даже в настройки уровня)
 
 class GameObject(sprite.Sprite):
-    def __init__(self, img, obj_id, batch, arr):
-        row, column = arr
-        super(GameObject, self).__init__(img, column * CELL_SIZE, WIN_HEIGHT - row * CELL_SIZE, batch=batch)
+    def __init__(self, img, obj_id, batch, group, row_column):
+        row, column = row_column
+        super(GameObject, self).__init__(img, column * CELL_SIZE,
+                                         WIN_HEIGHT - row * CELL_SIZE,
+                                         batch=batch, group=group)
         self.column = column
         self.row = row
         self.obj_id = obj_id
@@ -41,10 +44,13 @@ class GameObject(sprite.Sprite):
 
 
 class Player(GameObject):
-    def __init__(self, batch, arr):
-        super(Player, self).__init__(res.player, obj_id=1, batch=batch, arr=arr)
+    def __init__(self, batch, row_column):
+        super(Player, self).__init__(res.player, obj_id=1, batch=batch,
+                                     group=pyglet.graphics.OrderedGroup(2),
+                                     row_column=row_column)
 
-    views = {'up': res.player, 'down': res.player_down, 'left': res.player_left, 'right': res.player_right}
+    views = {'up': res.player, 'down': res.player_down, 'left': res.player_left,
+             'right': res.player_right}
 
     # TODO: научиться правильно поворачивать игрока (может, загружать в один большой спрайт и оттуда тягать по фреймам)
     for key in views:
@@ -55,8 +61,9 @@ class Player(GameObject):
 class Tree(GameObject):
     """деревья (для красоты)"""
 
-    def __init__(self, batch, arr):
-        super(Tree, self).__init__(res.pinetree, 2, batch, arr)
+    def __init__(self, batch, row_column):
+        super(Tree, self).__init__(res.pinetree, 2, batch,
+                                   pyglet.graphics.OrderedGroup(0), row_column)
 
     def __str__(self):
         return "tree: r=" + str(self.row) + ", c=" + str(self.column)
@@ -65,8 +72,9 @@ class Tree(GameObject):
 class Brick(GameObject):
     """кирпичная стена"""
 
-    def __init__(self, batch, arr):
-        super(Brick, self).__init__(res.brick, 3, batch, arr)
+    def __init__(self, batch, row_column):
+        super(Brick, self).__init__(res.brick, 3, batch,
+                                    pyglet.graphics.OrderedGroup(0), row_column)
 
     def __str__(self):
         return "brick: r=" + str(self.row) + ", c=" + str(self.column)
@@ -75,8 +83,9 @@ class Brick(GameObject):
 class Box(GameObject):
     """ящик"""
 
-    def __init__(self, batch, arr):
-        super(Box, self).__init__(res.box, 4, batch, arr)
+    def __init__(self, batch, row_column):
+        super(Box, self).__init__(res.box, 4, batch,
+                                  pyglet.graphics.OrderedGroup(0), row_column)
 
     def __str__(self):
         return "box: r=" + str(self.row) + ", c=" + str(self.column)
@@ -85,8 +94,10 @@ class Box(GameObject):
 class BoxTarget(GameObject):
     """место, куда надо поставить ящик"""
 
-    def __init__(self, batch, arr):
-        super(BoxTarget, self).__init__(res.target, 10, batch, arr)
+    def __init__(self, batch, row_column):
+        super(BoxTarget, self).__init__(res.target, 10, batch,
+                                        pyglet.graphics.OrderedGroup(1),
+                                        row_column)
 
     def __str__(self):
         return "box target: r=" + str(self.row) + ", c=" + str(self.column)
