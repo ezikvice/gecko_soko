@@ -49,14 +49,14 @@ class GameField:
                                          width=1, color=grid_color,
                                          batch=batch))
 
-    def clear_level(self, game_level):
-        game_level.cells.clear()
-        game_level.player.delete()
+    def clear_level(self):
+        self.cells.clear()
+        self.player.delete()
 
-    def load_level(self, level_number, game_level, batch):
-        self.clear_level(game_level)
+    def load_level(self, level_number, batch):
+        self.clear_level()
         with open('levels/' + level_number + '.json') as f:
-            game_level.level = int(level_number)
+            self.level = int(level_number)
             d = json.load(f)
             cells_dict = d["cells"]
             # print(cell)
@@ -68,7 +68,7 @@ class GameField:
                 for obj_id in cell["objects"]:
                     obj_set.add(game_objects.build_game_object(obj_id, [r, c],
                                                                batch))
-                    game_level.cells.setdefault((r, c), obj_set)
+                    self.cells.setdefault((r, c), obj_set)
             # print(game_level.cells)
 
     def get_cell_by_coords(self, x, y):
@@ -76,17 +76,27 @@ class GameField:
         column = x // game_metric.CELL_SIZE
         return row, column
 
-    def find_player(self, cells):
-        for cell in cells:
-            if cells[cell] is not None:
-                for obj in cells[cell]:
-                    if isinstance(obj, game_objects.Player):
-                        return obj
-        return None
-
     # TODO: можно через get_cell_by_coords
     def is_mouse_on_gamefield(self, x, y):
         if (x // game_metric.CELL_SIZE < game_metric.COLUMNS_NUM) & (
-                (game_metric.COLUMNS_NUM - y // game_metric.CELL_SIZE) < game_metric.ROWS_NUM):
+                (
+                        game_metric.COLUMNS_NUM - y // game_metric.CELL_SIZE) < game_metric.ROWS_NUM):
             return True
         return False
+
+
+def find_player(cells):
+    for cell in cells:
+        if cells[cell] is not None:
+            for obj in cells[cell]:
+                if isinstance(obj, game_objects.Player):
+                    return obj
+    return None
+
+
+def get_object_in_set(needed_object, obj_set):
+    for obj in obj_set:
+        if obj is not None:
+            if isinstance(obj, needed_object):
+                return obj
+    return None
