@@ -4,89 +4,24 @@ from pyglet.window import key
 
 import gamefield
 import undo_redo as history
-from game_metric import *
 from game_objects import Box, Brick, BoxTarget
+from ui_manager import UiManager
 
-__author__ = 'Dmitry'
-
-# TODO: сделать нормальный расчет координат. сейчас неправильно считаются
 
 def main():
-    global undo_redo, label, label2, motions, player_views, window, lvl, batch, fps_display
+    global undo_redo, lvl
     pyglet.resource.path = ["res"]
     pyglet.resource.reindex()
 
-    batch = pyglet.graphics.Batch()
+    undo_redo = history.UndoRedo()
 
     lvl = gamefield.GameField()
-
-    undo_redo = history.UndoRedo()
+    load_next_level(1, lvl, UiManager.batch)
 
     # game_field.music.play()
 
-    label = pyglet.text.Label('',
-                              font_name='Arial',
-                              font_size=24,
-                              x=310, y=10,
-                              anchor_x='right', anchor_y='baseline')
-
-    load_next_level(1, lvl, batch)
-
-    window = pyglet.window.Window(width=(CELL_SIZE * 10), height=(CELL_SIZE * 10),
-                                  caption="Gecko Soko")
-    window.set_mouse_visible(True)
-
-    fps_display = pyglet.window.FPSDisplay(window)
-    fps_display.label.y = 0
-
-    label2 = pyglet.text.Label('',
-                               font_name='Times New Roman',
-                               font_size=64,
-                               color=(255, 0, 0, 255),
-                               x=550, y=310,
-                               anchor_x='right', anchor_y='baseline')
-    motions = {key.MOTION_UP: [-1, 0],
-               key.MOTION_DOWN: [1, 0],
-               key.MOTION_LEFT: [0, -1],
-               key.MOTION_RIGHT: [0, 1]}
-    player_views = {key.MOTION_UP: 'up',
-                    key.MOTION_DOWN: 'down',
-                    key.MOTION_LEFT: 'left',
-                    key.MOTION_RIGHT: 'right'}
-
-    @window.event
-    def on_text_motion(motion):
-        move_player(motion)
-
-    @window.event
-    def on_key_press(symbol, modifiers):
-        if symbol == key.M:
-            lvl.music.pause()
-        if symbol == key.P:
-            lvl.music.play()
-        if symbol == key.PAGEUP:
-            lvl.music.volume += 0.05
-        if symbol == key.PAGEDOWN:
-            lvl.music.volume -= 0.05
-        if symbol == key.Z:
-            if modifiers & key.MOD_CTRL:
-                print("undo()")
-
-    @window.event
-    def on_draw():
-        window.clear()
-        batch.draw()
-        label.draw()
-        label2.draw()
-        fps_display.draw()
-
-
-def show_victory():
-    label2.text = 'VICTORY!'
-
-
-def show_level(level_number):
-    label.text = 'Level ' + str(level_number)
+    UiManager.window.set_mouse_visible(True)
+    UiManager.fps_display.label.y = 0
 
 
 def load_next_level(level_number, game_level, batch):
@@ -94,16 +29,10 @@ def load_next_level(level_number, game_level, batch):
         game_level.load_level(str(level_number), batch)
         game_level.player = gamefield.find_player(game_level.cells)
         undo_redo.clear_history()
-        show_level(level_number)
+        UiManager.show_level(level_number)
     except IOError:
         print("END GAME")
-        show_victory()
-
-
-def show_coords():
-    label.text = '[{0}, {1}]'.format(lvl.player.row, lvl.player.column)
-    label2.text = ''
-    # print(game_level.cells)
+        UiManager.show_victory()
 
 
 def is_figure_in_cell(figure, cell):
@@ -166,26 +95,53 @@ def get_object_in_set(needed_object, obj_set):
     return None
 
 
-
-
 def move_player(motion):
+    motions = {key.MOTION_UP: [-1, 0], key.MOTION_DOWN: [1, 0],
+               key.MOTION_LEFT: [0, -1], key.MOTION_RIGHT: [0, 1]}
+
+    player_views = {key.MOTION_UP: 'up', key.MOTION_DOWN: 'down',
+                    key.MOTION_LEFT: 'left', key.MOTION_RIGHT: 'right'}
+
     if motion in motions.keys():
         direction = motions.get(motion)
         if can_move(lvl.player, direction):
             lvl.player.image = lvl.player.views[player_views.get(motion)]
             lvl.player.move(direction)
         if check_win():
-            load_next_level(lvl.level + 1, lvl, batch)
+            load_next_level(lvl.level + 1, lvl, UiManager.batch)
 
 
+@UiManager.window.event
+def on_draw():
+    UiManager.draw_all()
+
+
+@UiManager.window.event
+def on_text_motion(motion):
+    move_player(motion)
+
+
+@UiManager.window.event
+def on_key_press(symbol, modifiers):
+    if symbol == key.M:
+        lvl.music.pause()
+    if symbol == key.P:
+        lvl.music.play()
+    if symbol == key.PAGEUP:
+        lvl.music.volume += 0.05
+    if symbol == key.PAGEDOWN:
+        lvl.music.volume -= 0.05
+    if symbol == key.Z:
+        if modifiers & key.MOD_CTRL:
+            print("undo()")
 
 
 def update(dt):
     pass
 
 
-main()
+# наверное, надо удалить закомментированное
 # pyglet.clock.set_fps_limit(60)
-pyglet.clock.schedule_interval(update, 1 / 120)
-
+# pyglet.clock.schedule_interval(update, 1 / 120)
+main()
 pyglet.app.run()
