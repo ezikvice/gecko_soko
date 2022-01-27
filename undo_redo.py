@@ -38,3 +38,7 @@ class UndoRedo:
     def clear_history(self):
         self._history = [((), ())]
         self._history_position = 0
+
+    def show_history(self):
+        for step in self._history:
+            print(step)

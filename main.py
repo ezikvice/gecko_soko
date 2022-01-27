@@ -3,7 +3,7 @@ import pyglet
 from pyglet.window import key
 
 import gamefield
-import undo_redo
+import undo_redo as history
 from game_metric import *
 from game_objects import Box, Brick, BoxTarget
 
@@ -11,22 +11,74 @@ __author__ = 'Dmitry'
 
 # TODO: сделать нормальный расчет координат. сейчас неправильно считаются
 
-pyglet.resource.path = ["res"]
-pyglet.resource.reindex()
+def main():
+    global undo_redo, label, label2, motions, player_views, window, lvl, batch, fps_display
+    pyglet.resource.path = ["res"]
+    pyglet.resource.reindex()
 
-batch = pyglet.graphics.Batch()
+    batch = pyglet.graphics.Batch()
 
-lvl = gamefield.GameField()
+    lvl = gamefield.GameField()
 
-undo_redo = undo_redo.UndoRedo()
+    undo_redo = history.UndoRedo()
 
-# game_field.music.play()
+    # game_field.music.play()
 
-label = pyglet.text.Label('',
-                          font_name='Arial',
-                          font_size=24,
-                          x=310, y=10,
-                          anchor_x='right', anchor_y='baseline')
+    label = pyglet.text.Label('',
+                              font_name='Arial',
+                              font_size=24,
+                              x=310, y=10,
+                              anchor_x='right', anchor_y='baseline')
+
+    load_next_level(1, lvl, batch)
+
+    window = pyglet.window.Window(width=(CELL_SIZE * 10), height=(CELL_SIZE * 10),
+                                  caption="Gecko Soko")
+    window.set_mouse_visible(True)
+
+    fps_display = pyglet.window.FPSDisplay(window)
+    fps_display.label.y = 0
+
+    label2 = pyglet.text.Label('',
+                               font_name='Times New Roman',
+                               font_size=64,
+                               color=(255, 0, 0, 255),
+                               x=550, y=310,
+                               anchor_x='right', anchor_y='baseline')
+    motions = {key.MOTION_UP: [-1, 0],
+               key.MOTION_DOWN: [1, 0],
+               key.MOTION_LEFT: [0, -1],
+               key.MOTION_RIGHT: [0, 1]}
+    player_views = {key.MOTION_UP: 'up',
+                    key.MOTION_DOWN: 'down',
+                    key.MOTION_LEFT: 'left',
+                    key.MOTION_RIGHT: 'right'}
+
+    @window.event
+    def on_text_motion(motion):
+        move_player(motion)
+
+    @window.event
+    def on_key_press(symbol, modifiers):
+        if symbol == key.M:
+            lvl.music.pause()
+        if symbol == key.P:
+            lvl.music.play()
+        if symbol == key.PAGEUP:
+            lvl.music.volume += 0.05
+        if symbol == key.PAGEDOWN:
+            lvl.music.volume -= 0.05
+        if symbol == key.Z:
+            if modifiers & key.MOD_CTRL:
+                print("undo()")
+
+    @window.event
+    def on_draw():
+        window.clear()
+        batch.draw()
+        label.draw()
+        label2.draw()
+        fps_display.draw()
 
 
 def show_victory():
@@ -46,23 +98,6 @@ def load_next_level(level_number, game_level, batch):
     except IOError:
         print("END GAME")
         show_victory()
-
-
-load_next_level(1, lvl, batch)
-
-window = pyglet.window.Window(width=(CELL_SIZE * 10), height=(CELL_SIZE * 10),
-                              caption="Gecko Soko")
-window.set_mouse_visible(True)
-
-fps_display = pyglet.window.FPSDisplay(window)
-fps_display.label.y = 0
-
-label2 = pyglet.text.Label('',
-                           font_name='Times New Roman',
-                           font_size=64,
-                           color=(255, 0, 0, 255),
-                           x=550, y=310,
-                           anchor_x='right', anchor_y='baseline')
 
 
 def show_coords():
@@ -131,14 +166,6 @@ def get_object_in_set(needed_object, obj_set):
     return None
 
 
-motions = {key.MOTION_UP: [-1, 0],
-           key.MOTION_DOWN: [1, 0],
-           key.MOTION_LEFT: [0, -1],
-           key.MOTION_RIGHT: [0, 1]}
-player_views = {key.MOTION_UP: 'up',
-                key.MOTION_DOWN: 'down',
-                key.MOTION_LEFT: 'left',
-                key.MOTION_RIGHT: 'right'}
 
 
 def move_player(motion):
@@ -151,39 +178,13 @@ def move_player(motion):
             load_next_level(lvl.level + 1, lvl, batch)
 
 
-@window.event
-def on_text_motion(motion):
-    move_player(motion)
-
-
-@window.event
-def on_key_press(symbol, modifiers):
-    if symbol == key.M:
-        lvl.music.pause()
-    if symbol == key.P:
-        lvl.music.play()
-    if symbol == key.PAGEUP:
-        lvl.music.volume += 0.05
-    if symbol == key.PAGEDOWN:
-        lvl.music.volume -= 0.05
-    if symbol == key.Z:
-        if modifiers & key.MOD_CTRL:
-            print("undo()")
-
-
-@window.event
-def on_draw():
-    window.clear()
-    batch.draw()
-    label.draw()
-    label2.draw()
-    fps_display.draw()
 
 
 def update(dt):
     pass
 
 
+main()
 # pyglet.clock.set_fps_limit(60)
 pyglet.clock.schedule_interval(update, 1 / 120)
 
