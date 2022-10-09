@@ -24,6 +24,16 @@ class UndoRedo:
         else:
             print("nothing to undo")
 
+    def redo(self):
+        """Perform a REDO if the history_position is less than the end of the history list"""
+        if self._history_position + 1 < len(self._history):
+            self._history_position += 1
+            self._commands[
+                self._history[self._history_position][1]
+            ].execute(self._history[self._history_position][2])
+        else:
+            print("nothing to REDO")
+
     def add_to_history(self, cells):
         boxes = []
         for cell in cells:

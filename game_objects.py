@@ -31,10 +31,9 @@ class GameObject(sprite.Sprite):
         next_cell = np.add([self.row, self.column], direction)
         next_cell.tolist()
         row, column = next_cell
-        self.column = column
         self.row = row
-        pos = (column * CELL_SIZE, WIN_HEIGHT - row * CELL_SIZE)
-        self.position = pos
+        self.column = column
+        self.position = (column * CELL_SIZE, WIN_HEIGHT - row * CELL_SIZE)
 
     def get_position(self):
         # для удобства сначала строка, потом колонка

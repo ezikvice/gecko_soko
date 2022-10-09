@@ -16,7 +16,7 @@ def main():
     undo_redo = history.UndoRedo()
 
     lvl = gamefield.GameField()
-    load_next_level(1, lvl, UiManager.batch)
+    load_next_level(1, lvl)
 
     # game_field.music.play()
 
@@ -24,9 +24,9 @@ def main():
     UiManager.fps_display.label.y = 0
 
 
-def load_next_level(level_number, game_level, batch):
+def load_next_level(level_number, game_level):
     try:
-        game_level.load_level(str(level_number), batch)
+        game_level.load_level(str(level_number))
         game_level.player = gamefield.find_player(game_level.cells)
         undo_redo.clear_history()
         UiManager.show_level(level_number)
@@ -42,22 +42,29 @@ def is_figure_in_cell(figure, cell):
     return False
 
 
+def is_brick_in_cell(cell):
+    return is_figure_in_cell(Brick(None, cell), cell)
+
+
+def is_box_in_cell(cell):
+    return is_figure_in_cell(Box(None, cell), cell)
+
+
 def can_move(obj, direction):
     # проверяем не кирпич ли в нашем направлении
     next_cell = np.add([obj.row, obj.column], direction)
-    next_cell.tolist()
-    r, c = next_cell
-    if is_figure_in_cell(Brick(None, next_cell), next_cell):
+    r, c = next_cell.tolist()
+    if is_brick_in_cell(next_cell):
         return False
     else:
         # проверяем, если это ящик, то что за ним
         old_r = r
         old_c = c
-        if is_figure_in_cell(Box(None, next_cell), next_cell):
+        if is_box_in_cell(next_cell):
             next_cell = np.add(next_cell, direction)
             next_cell.tolist()
-            if is_figure_in_cell(Box(None, next_cell), next_cell) or \
-                    is_figure_in_cell(Brick(None, next_cell), next_cell):
+            if is_box_in_cell(next_cell) or \
+                    is_brick_in_cell(next_cell):
                 return False
             else:
                 old_obj_set = lvl.cells.get((old_r, old_c))
@@ -108,7 +115,7 @@ def move_player(motion):
             lvl.player.image = lvl.player.views[player_views.get(motion)]
             lvl.player.move(direction)
         if check_win():
-            load_next_level(lvl.level + 1, lvl, UiManager.batch)
+            load_next_level(lvl.level + 1, lvl)
 
 
 @UiManager.window.event
@@ -134,6 +141,7 @@ def on_key_press(symbol, modifiers):
     if symbol == key.Z:
         if modifiers & key.MOD_CTRL:
             print("undo()")
+            undo_redo.show_history()
 
 
 def update(dt):

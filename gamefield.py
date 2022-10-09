@@ -8,10 +8,9 @@ import pyglet.shapes as shapes
 import game_metric
 import game_objects
 import resources as res
-
+from ui_manager import UiManager
 
 # TODO: все-таки, где располагаются объекты, должно храниться не в объектах а в игровом поле
-
 # TODO: игровое поле представляет собой двумерный массив ячеек, а ячейка содержит в себе список игровых объектов
 # {{row, column}:[game_objects]}
 
@@ -40,20 +39,18 @@ class GameField:
             lines_arr.append(shapes.Line(game_metric.CELL_SIZE * i + 1, 640 - 1,
                                          game_metric.CELL_SIZE * i + 1,
                                          640 - game_metric.COLUMNS_NUM * game_metric.CELL_SIZE - 1,
-                                         width=1, color=grid_color,
-                                         batch=batch))
+                                         width=1, color=grid_color, batch=batch))
         for i in range(game_metric.COLUMNS_NUM + 1):
             lines_arr.append(shapes.Line(1, 640 - game_metric.CELL_SIZE * i - 1,
                                          game_metric.COLUMNS_NUM * game_metric.CELL_SIZE + 1,
                                          640 - game_metric.CELL_SIZE * i - 1,
-                                         width=1, color=grid_color,
-                                         batch=batch))
+                                         width=1, color=grid_color, batch=batch))
 
     def clear_level(self):
         self.cells.clear()
         self.player.delete()
 
-    def load_level(self, level_number, batch):
+    def load_level(self, level_number):
         self.clear_level()
         with open('levels/' + level_number + '.json') as f:
             self.level = int(level_number)
@@ -61,15 +58,16 @@ class GameField:
             cells_dict = d["cells"]
             # print(cell)
 
-            for cell in cells_dict:
-                r = cell["r"]
-                c = cell["c"]
-                obj_set = set()
-                for obj_id in cell["objects"]:
-                    obj_set.add(game_objects.build_game_object(obj_id, [r, c],
-                                                               batch))
-                    self.cells.setdefault((r, c), obj_set)
-            # print(game_level.cells)
+            self.fill_gamefield(cells_dict)
+
+    def fill_gamefield(self, cells_dict):
+        for cell in cells_dict:
+            r = cell["r"]
+            c = cell["c"]
+            obj_set = set()
+            for obj_id in cell["objects"]:
+                obj_set.add(game_objects.build_game_object(obj_id, [r, c], UiManager.batch))
+                self.cells.setdefault((r, c), obj_set)
 
     def get_cell_by_coords(self, x, y):
         row = game_metric.ROWS_NUM - y // game_metric.CELL_SIZE
@@ -79,8 +77,7 @@ class GameField:
     # TODO: можно через get_cell_by_coords
     def is_mouse_on_gamefield(self, x, y):
         if (x // game_metric.CELL_SIZE < game_metric.COLUMNS_NUM) & (
-                (
-                        game_metric.COLUMNS_NUM - y // game_metric.CELL_SIZE) < game_metric.ROWS_NUM):
+                (game_metric.COLUMNS_NUM - y // game_metric.CELL_SIZE) < game_metric.ROWS_NUM):
             return True
         return False
 
